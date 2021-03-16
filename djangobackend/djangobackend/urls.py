@@ -20,6 +20,6 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('', include(toure.urls))
+    path('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
