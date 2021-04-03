@@ -3,10 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 class User(AbstractUser):
+    username = models.CharField(max_length=255, primary_key=True)
     phone_num = models.CharField(max_length=255)
     house_num = models.CharField(max_length=255)
     postal_code = models.CharField(max_length=255)
     street_num = models.CharField(max_length=255)
+    user_role = models.CharField(max_length=255, null=False, default="customer")
+
+    USERNAME_FIELD = 'username'
 
 class Manager(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, primary_key=True)
