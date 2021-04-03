@@ -22,10 +22,8 @@ def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
                 permission_classes = [partial_update()]
             elif self.action == 'list':
                 permission_classes = [list()]
-            elif self.action == 'destroy':
-                permission_classes = [destroy()]
             else:
-                permission_classes = [DenyAll()]
+                permission_classes = [destroy()]
             return func(self) + permission_classes
         return wrapper
     return _enforce
