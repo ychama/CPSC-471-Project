@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import UserSerializer, CustomerSerializer
-from .models import User, Customer
+from .serializers import UserSerializer, CustomerSerializer, BranchSerializer
+from .models import User, Customer, RestaurantBranch
 
 def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
             partial_update=AllowAny, list=AllowAny, destroy=AllowAny):
@@ -82,8 +82,38 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk=None):
         return Response(status.HTTP_404_NOT_FOUND)
 
-    def list(self, request, pk=None):
+    def list(self, request):
         return Response(status.HTTP_404_NOT_FOUND)
 
-    def create(self, request, pk=None):
+    def create(self, request):
         return Response(status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, pk=None):
+        queryset = Customer.objects.all()
+        data = request.data
+        if(not queryset.filter(user=pk)):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        customer = queryset.get(user=pk)
+        customer_user = User.objects.get(username=pk)
+
+        # updating values
+        customer_user.first_name = data['user']['first_name']
+        customer_user.last_name = data['user']['last_name']
+        customer_user.email = data['user']['email']
+        customer_user.phone_num = data['user']['phone_num']
+        customer_user.house_num = data['user']['house_num']
+        customer_user.postal_code = data['user']['postal_code']
+        customer_user.street_num = data['user']['street_num']
+        customer.card_num = data['card_num']
+        customer_user.save()
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class BranchViewSet(viewsets.ModelViewSet):
+    queryset = RestaurantBranch.objects.all()
+    serializer_class = BranchSerializer
+    permission_classes = (IsAuthenticated,)

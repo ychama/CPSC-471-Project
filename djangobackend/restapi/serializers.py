@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Manager, Customer, Admin
+from .models import User, Manager, Customer, Admin, RestaurantBranch
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,3 +19,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         response['user'] = UserSerializer(instance.user, context=self.context).data
         return response
+
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantBranch
+        fields = ('branch_id', 'phone_num', 'house_num', 'street_num', 'postal_code')
