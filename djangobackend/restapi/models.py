@@ -41,7 +41,6 @@ class Ingredient(models.Model):
 class RestaurantBranch (models.Model):
     branch_id = models.IntegerField(primary_key=True)
     phone_num = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
     house_num = models.CharField(max_length=255)
     postal_code = models.CharField(max_length=255)
     street_num = models.CharField(max_length=255)
