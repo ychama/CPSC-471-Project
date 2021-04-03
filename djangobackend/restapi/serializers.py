@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift, RestaurantBranch
+from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift, RestaurantBranch,Order
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,6 +30,12 @@ class FoodItemSerializer(serializers.ModelSerializer):
         model = FoodItem
         fields = ('name',)
 
+
+class PastOrderSerializer(serializers.ModelSerializer):
+    food_items = FoodItemSerializer(many = True, read_only = True)
+    class Meta:
+        model = Order
+        fields = ('order_date','food_items')
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer
-from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift
+from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer
+from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order
 
 
 def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
@@ -88,6 +88,18 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         return Response(status.HTTP_404_NOT_FOUND)
+
+
+class CustomerOrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = PastOrderSerializer
+    #permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Order.objects.all()
+        userOrders = queryset.filter(customer = pk)
+        serializer = PastOrderSerializer(userOrders, many=True)
+        return Response(serializer.data)
 
     def update(self, request, pk=None):
         queryset = Customer.objects.all()

@@ -1,0 +1,71 @@
+type User
+  @model
+  @key(name: "userByEmail", fields: ["email"], queryField: "userByEmail") {
+  id: ID!
+  email: String!
+  first_name: String!
+  last_name: String!
+  DOB: AWSDate!
+  pic: String
+  sex: Sex!
+  height: Float!
+  pulseFitnessDevices: [PulseFitnessDevice]
+    @connection(keyName: "byPulseFitnessDevice", fields: ["id"])
+  analytics: [Analytics] @connection(keyName: "byUser", fields: ["id"])
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+type PulseFitnessDevice
+  @model
+  @key(name: "byPulseFitnessDevice", fields: ["userID"]) {
+  id: ID!
+  uid: String!
+  name: String!
+  userID: ID!
+  analytics: [Analytics]
+    @connection(keyName: "byPulseFitnessDevice", fields: ["id"])
+}
+
+type Analytics
+  @model
+  @key(name: "byUser", fields: ["userID"])
+  @key(name: "byPulseFitnessDevice", fields: ["pulseFitnessID"]) {
+  analyticID: ID!
+  userID: ID!
+  pulseFitnessID: ID!
+  date_recorded: AWSDate!
+  stepCountID: ID!
+  heartRateID: ID!
+  bloodOxygenID: ID!
+  stepCount: StepCount! @connection(fields: ["stepCountID"])
+  heartRate: HeartRate! @connection(fields: ["heartRateID"])
+  bloodOxygen: BloodOxygen! @connection(fields: ["bloodOxygenID"])
+}
+
+type StepCount @model {
+  id: ID!
+  step_count: Int!
+  metrics: AnalyicsStatus!
+}
+
+type HeartRate @model {
+  id: ID!
+  heart_rate: Float!
+  metrics: AnalyicsStatus!
+}
+
+type BloodOxygen @model {
+  id: ID!
+  blood_oxygen: Float!
+  metrics: AnalyicsStatus!
+}
+
+enum AnalyicsStatus {
+  NORMAL
+  AVERAGE
+  SEVERE
+}
