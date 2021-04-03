@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Manager, Customer, Admin
+from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,3 +19,19 @@ class CustomerSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         response['user'] = UserSerializer(instance.user, context=self.context).data
         return response
+
+class FoodItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodItem
+        fields = ('name',)
+
+class DriverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ('user', 'f_name', 'l_name', 'phone_num', 'branch',)
+
+class ShiftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shift
+        fields = ('start_time', 'duration', 'manager', 'driver',)
+    

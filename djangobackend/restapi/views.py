@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import UserSerializer, CustomerSerializer
-from .models import User, Customer
+from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer
+from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift
 
 def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
             partial_update=AllowAny, list=AllowAny, destroy=AllowAny):
@@ -87,3 +87,36 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def create(self, request, pk=None):
         return Response(status.HTTP_404_NOT_FOUND)
+
+class FoodItemViewSet(viewsets.ModelViewSet):
+    queryset = FoodItem.objects.all()
+    serializer_class = FoodItemSerializer
+    #permission_classes = (IsAuthenticated,)
+    
+    def retrieve(self, request, pk=None):
+        queryset = FoodItem.objects.all()
+        Foods = get_object_or_404(RestaurantBranch.objects.all(), pk=pk)
+        Items = FoodItemSerializer(Foods.food_items, many=True)
+        return Response(Items.data, status.HTTP_200_OK)
+
+class DriverViewSet(viewsets.ModelViewSet):
+    queryset = Driver.objects.all()
+    serializer_class = DriverSerializer
+    #permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Driver.objects.all()
+        dr = get_object_or_404(Driver.objects.all(), pk=pk)
+        drive = DriverSerializer(dr)
+        return Response(drive.data, status.HTTP_200_OK)
+
+class ShiftViewSet(viewsets.ModelViewSet):
+    queryset = Shift.objects.all()
+    serializer_class = ShiftSerializer
+    #permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Shift.objects.all()
+        sh = Shift.objects.all().filter(driver=pk)
+        shift = ShiftSerializer(sh, many=True)
+        return Response(shift.data, status.HTTP_200_OK)
