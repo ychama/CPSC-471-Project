@@ -89,11 +89,3 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def create(self, request, pk=None):
         return Response(status.HTTP_404_NOT_FOUND)
-
-
-
-
-    
-        
-        
-
