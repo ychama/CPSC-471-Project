@@ -3,9 +3,10 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.db.models import Q
 
-from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer
-from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order
+from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer
+from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient
 
 
 def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
@@ -23,7 +24,7 @@ def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
                 permission_classes = [partial_update()]
             elif self.action == 'list':
                 permission_classes = [list()]
-            else:
+            elif self.action == 'destroy':
                 permission_classes = [destroy()]
             return func(self) + permission_classes
         return wrapper
@@ -33,9 +34,9 @@ class AuthUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     
-    @enforce(retrieve=IsAuthenticated, update=IsAuthenticated, create=AllowAny)
-    def get_permissions(self):
-        return []
+    # @enforce(retrieve=IsAuthenticated, update=IsAuthenticated, create=AllowAny)
+    # def get_permissions(self):
+    #     return []
 
     def list(self, request):
         return Response(status.HTTP_404_NOT_FOUND)
@@ -75,7 +76,7 @@ class AuthUserViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def destroy(self, request, pk=None):
         return Response(status.HTTP_404_NOT_FOUND)
@@ -88,19 +89,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         return Response(status.HTTP_404_NOT_FOUND)
-
-
-class CustomerOrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
-    serializer_class = PastOrderSerializer
-    #permission_classes = (IsAuthenticated,)
-
-    def retrieve(self, request, pk=None):
-        queryset = Order.objects.all()
-        userOrders = queryset.filter(customer = pk)
-        serializer = PastOrderSerializer(userOrders, many=True)
-        return Response(serializer.data)
-
+    
     def update(self, request, pk=None):
         queryset = Customer.objects.all()
         data = request.data
@@ -125,11 +114,31 @@ class CustomerOrderViewSet(viewsets.ModelViewSet):
         serializer = CustomerSerializer(customer)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+class CustomerOrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = PastOrderSerializer
+    #permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Order.objects.all()
+        userOrders = queryset.filter(customer = pk)
+        serializer = PastOrderSerializer(userOrders, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        queryset = Order.objects.all()
+        #find driver
+        driver = ...
+        order = Order.objects.create(order_date=now, customer=request.data["customer"], food_items=request.data["food_items"], driver=driver)
+        order.save()
+        serializer = PastOrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class BranchViewSet(viewsets.ModelViewSet):
     queryset = RestaurantBranch.objects.all()
     serializer_class = BranchSerializer
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
 class FoodItemViewSet(viewsets.ModelViewSet):
     queryset = FoodItem.objects.all()
@@ -153,6 +162,25 @@ class DriverViewSet(viewsets.ModelViewSet):
         drive = DriverSerializer(dr)
         return Response(drive.data, status.HTTP_200_OK)
 
+    def create(self, request):
+        queryset = Driver.objects.all()
+        data = request.data
+        if(queryset.filter(user=data['username'])):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.create(username=data['username'], password=data['password'], email=data['email'], first_name=data['first_name'], last_name=data['last_name'], phone_num=data['phone_num'], house_num=data['house_num'], postal_code=data['postal_code'], street_num=data['street_num'], user_role=data['user_role'])
+        user_serializer = UserSerializer(user)
+        user.password = user_serializer.validate_password(data['password'])
+        user.save()
+
+        branch = RestaurantBranch.objects.all().get(manager=data['manager_user'])
+        driver = Driver.objects.create(user=user, salary=data['salary'], branch=branch)
+        driver.save()
+
+        serializer = DriverSerializer(driver)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
 class ShiftViewSet(viewsets.ModelViewSet):
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
@@ -163,4 +191,33 @@ class ShiftViewSet(viewsets.ModelViewSet):
         sh = Shift.objects.all().filter(driver=pk)
         shift = ShiftSerializer(sh, many=True)
         return Response(shift.data, status.HTTP_200_OK)
+
+class ManagerViewSet(viewsets.ModelViewSet):
+    queryset = Manager.objects.all()
+    serializer_class = ManagerSerializer
+    #permission_classes = (IsAuthenticated,)
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    #permission_classes = (IsAuthenticated,)
+
+class DriverOrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = PastOrderSerializer
+    #permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, pk=None):
+        queryset = Order.objects.all()
+        driverOrders = queryset.filter(Q(driver=pk) & Q(order_delivered=False))
+        serializer = PastOrderSerializer(driverOrders, many=True)
+        return Response(serializer.data)
+    
+    def update(self, request, pk=None):
+        queryset = Order.objects.all()
+        order = queryset.get(Q(customer=request.data["customer"]) & Q(order_date=request.data["order_date"]))
+        order.order_delivered = True
+        order.save()
+        return Response(status=status.HTTP_200_OK)
+
 

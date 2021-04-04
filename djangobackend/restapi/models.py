@@ -36,7 +36,7 @@ class Ingredient(models.Model):
     ingredient_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     quantity = models.IntegerField()
-    supplier_id = models.ForeignKey(Supplier, on_delete=models.SET_NULL,null=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL,null=True)
 
 class RestaurantBranch (models.Model):
     branch_id = models.IntegerField(primary_key=True)
@@ -49,7 +49,8 @@ class RestaurantBranch (models.Model):
 
 class FoodItem (models.Model):
     name = models.CharField(max_length=255,primary_key=True)
-    resteraunt_branches = models.ManyToManyField(RestaurantBranch, related_name="food_items")
+    price = models.FloatField()
+    restaurant_branches = models.ManyToManyField(RestaurantBranch, related_name="food_items")
 
 class FoodUses(models.Model):
     amount = models.IntegerField()
@@ -61,9 +62,7 @@ class FoodUses(models.Model):
 
 
 class Driver (models.Model):
-    f_name = models.CharField(max_length=255)
-    l_name = models.CharField(max_length=255)
-    phone_num = models.CharField(max_length=255)
+    salary = models.FloatField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, primary_key=True)
     branch = models.ForeignKey(RestaurantBranch, on_delete=models.SET_NULL, null=True)
 
@@ -78,6 +77,7 @@ class Vehicle(models.Model):
         unique_together = ('vin', 'branch')
 
 class Shift(models.Model):
+    id = models.IntegerField(primary_key=True)
     start_time = models.DateTimeField()
     duration = models.IntegerField()
     manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, null=True)
@@ -91,6 +91,7 @@ class Order(models.Model):
     driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     food_items = models.ManyToManyField(FoodItem, related_name="orders")
+    order_delivered = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('order_date', 'customer')

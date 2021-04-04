@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift, RestaurantBranch,Order
+from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift, RestaurantBranch, Order, Manager, Supplier, Ingredient
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,21 +28,61 @@ class BranchSerializer(serializers.ModelSerializer):
 class FoodItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodItem
-        fields = ('name',)
+        fields = ('name', 'price', 'restaurant_branches')
 
 
 class PastOrderSerializer(serializers.ModelSerializer):
     food_items = FoodItemSerializer(many = True, read_only = True)
     class Meta:
         model = Order
-        fields = ('order_date','food_items')
+        fields = ('order_date','food_items', 'order_delivered', 'customer')
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ('user', 'card_num')
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = UserSerializer(instance.user, context=self.context).data
+        return response
+
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
-        fields = ('user', 'f_name', 'l_name', 'phone_num', 'branch',)
+        fields = ('user', 'branch', 'salary')
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = UserSerializer(instance.user, context=self.context).data
+        return response
 
 class ShiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
-        fields = ('start_time', 'duration', 'manager', 'driver',)
+        fields = ('id','start_time', 'duration', 'manager', 'driver',)
   
+class ManagerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Manager
+        fields = ('user', 'branch', 'salary')
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = UserSerializer(instance.user, context=self.context).data
+        return response
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ('name', 'supplier_id')
+
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ('ingredient_id', 'name', 'quantity', 'supplier')
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['supplier'] = SupplierSerializer(instance.supplier, context=self.context).data
+        return response
