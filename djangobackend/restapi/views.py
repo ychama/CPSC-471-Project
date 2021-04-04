@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Q
+import datetime, random
+from django.utils import timezone
 
 from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer
 from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient
@@ -127,10 +129,32 @@ class CustomerOrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         queryset = Order.objects.all()
-        #find driver
-        driver = ...
-        order = Order.objects.create(order_date=now, customer=request.data["customer"], food_items=request.data["food_items"], driver=driver)
+        current_time = timezone.now()
+        available_drivers = []
+
+        for shift in Shift.objects.all():
+            if(shift.driver.branch.branch_id is not request.data['branch']):
+                continue
+
+            work_duration = datetime.timedelta(hours=shift.duration)
+            end_time = shift.start_time + work_duration
+
+            if shift.start_time <= current_time <= end_time:
+                available_drivers.append(shift.driver) 
+
+        if len(available_drivers) == 0:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        driver = available_drivers[random.randint(0, len(available_drivers) - 1)]
+        customer = Customer.objects.all().get(user=request.data["customer"])
+
+        if customer is None or len(request.data["food_items"]) == 0:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(order_date=current_time, customer=customer, driver=driver)
+        order.food_items.set(FoodItem.objects.filter(name__in=request.data["food_items"]))
         order.save()
+
         serializer = PastOrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
