@@ -59,8 +59,6 @@ const SignIn = (props) => {
       setPasswordErrorMessage("Password field is required");
     } else {
       await getToken();
-      console.log(authToken);
-      await signIn();
     }
   };
 
@@ -90,6 +88,7 @@ const SignIn = (props) => {
       })
       .then((res) => {
         setAuthToken(res.data["access"]);
+
         signIn(res.data["access"]);
       })
       .catch((err) => {
