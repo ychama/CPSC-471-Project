@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Q
 import datetime, random
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import check_password
 
 from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer
 from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient
@@ -31,6 +33,44 @@ def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
             return func(self) + permission_classes
         return wrapper
     return _enforce
+
+class TokenViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+    def list(self, request):
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, pk=None):
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, pk=None):
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def retrieve(self, request, pk=None):
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def partial_update(self, request, pk=None):
+        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def create(self, request):
+        queryset = User.objects.all()
+        data = request.data
+        user = get_object_or_404(queryset, pk=data['username'])
+        user_serializer = UserSerializer(user)
+
+        if(not check_password(data['password'], user.password)):
+            return Response(status.HTTP_400_BAD_REQUEST)
+
+        refresh = RefreshToken.for_user(user)
+        response = {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token)
+                    }
+        return Response(response, status=status.HTTP_200_OK)
+        
+
 
 class AuthUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
