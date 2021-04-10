@@ -35,15 +35,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Dashboard = () => {
-  const { user } = useContext(AppContext);
+  const { user, authToken } = useContext(AppContext);
   const [branch, setBranch] = useState("");
 
   useEffect(() => {
     if (user) {
       console.log(user);
+      console.log(authToken);
     }
-    console.log(localStorage.getItem["currentUserInfo"]);
-  });
+  }, []);
 
   const getBranches = () => {};
 

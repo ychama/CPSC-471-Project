@@ -29,7 +29,9 @@ const App = () => {
       <Provider store={Store}>
         <MatxTheme>
           <Router history={history}>
-            <MatxLayout />
+            <AuthGuard>
+              <MatxLayout />
+            </AuthGuard>
           </Router>
         </MatxTheme>
       </Provider>

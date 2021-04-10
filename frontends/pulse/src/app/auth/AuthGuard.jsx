@@ -1,16 +1,39 @@
 import React, { useContext, useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import AppContext from "app/appContext";
+import axios from "axios";
 
 const AuthGuard = (props) => {
   const { location, history, children } = props;
   const { pathname } = location;
-  const { routes, setUser, refreshAuth } = useContext(AppContext);
+  const { routes, setUser, refreshAuth, setAuthToken } = useContext(AppContext);
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     let currentUserInfo = JSON.parse(localStorage.getItem("currentUserInfo"));
+    let authTok = localStorage.getItem("authToken");
+
     if (currentUserInfo) {
+      console.log(authTok);
+      setUser({
+        ...currentUserInfo,
+      });
+
+      setAuthToken(authTok);
+
+      // axios
+      //   .post("http://localhost:8000/api/token/", {
+      //     username: currentUserInfo["username"],
+      //     password: currentUserInfo["password"],
+      //   })
+      //   .then((res) => {
+      //     const token = res.data["access"];
+      //     console.log(token);
+      //     setAuthToken(token);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     }
   }, [refreshAuth]);
 

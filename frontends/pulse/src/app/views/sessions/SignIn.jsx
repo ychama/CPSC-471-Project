@@ -35,7 +35,7 @@ const SignIn = (props) => {
     console.log(role.toUpperCase());
     switch (role.toUpperCase()) {
       case "CUSTOMER":
-        history.push("/dashboard");
+        history.push("/dashboard", { authToken });
         break;
       default:
         history.push("/session/404");
