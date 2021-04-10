@@ -51,7 +51,8 @@ class AuthUserViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         queryset = User.objects.all()
-        data = request.data
+        data = request.data['createUser']
+        print(data)
         if(queryset.filter(username=data['username'])):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
