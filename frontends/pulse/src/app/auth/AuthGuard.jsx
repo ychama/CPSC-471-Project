@@ -1,9 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import AppContext from "app/appContext";
-import API, { graphqlOperation } from "@aws-amplify/api";
-import { userByEmail } from "app/graphql";
-import * as subscriptions from "../../graphql/subscriptions";
 
 const AuthGuard = (props) => {
   const { location, history, children } = props;
@@ -14,24 +11,6 @@ const AuthGuard = (props) => {
   useEffect(() => {
     let currentUserInfo = JSON.parse(localStorage.getItem("currentUserInfo"));
     if (currentUserInfo) {
-      API.graphql(
-        graphqlOperation(userByEmail, {
-          email: currentUserInfo.attributes.email,
-        })
-      )
-        .then((resp) => {
-          if (resp.data.userByEmail.items.length > 0) {
-            const userData = resp.data.userByEmail.items[0];
-            console.log(userData);
-            setUser({
-              ...currentUserInfo,
-              ...userData,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error in fetching user info", error);
-        });
     }
   }, [refreshAuth]);
 

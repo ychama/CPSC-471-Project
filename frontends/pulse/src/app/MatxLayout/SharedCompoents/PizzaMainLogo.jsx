@@ -1,6 +1,6 @@
 import React from "react";
 
-const PulseMainLogo = (props) => (
+const PizzaMainLogo = (props) => (
   <div
     style={{
       width: props.width,
@@ -8,8 +8,8 @@ const PulseMainLogo = (props) => (
       alignItems: "center",
     }}
   >
-    <img alt="vidkids-logo-main" src="/assets/images/PulseLogo.png" />
+    <img alt="pizza-log-min" src="/assets/images/PizzaLogo.png" />
   </div>
 );
 
-export default PulseMainLogo;
+export default PizzaMainLogo;

@@ -12,16 +12,9 @@ import {
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import TextButton from "../shared/TextButton";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
-import API, { graphqlOperation } from "@aws-amplify/api";
-import * as mutations from "../../../graphql/mutations";
-import { userByEmail } from "../../graphql";
-import { Auth } from "aws-amplify";
+import axios from "axios";
+
+//axios.defaults.headers.common["Access-Control-Allow-Origin"] = "true";
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     position: "relative",
@@ -50,15 +43,23 @@ const Register = (props) => {
   const { history } = props;
 
   let inputEmail = "";
-
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState(inputEmail);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [selectedDate, setSelectedDate] = useState(Date.now());
-  const [sex, setSex] = useState("");
-  const [sexErrorMessage, setSexErrorMessage] = useState("");
-  const [height, setHeight] = useState("");
-  const [heightErrorMessage, setHeightErrorMessage] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [postalCode, setPostCode] = useState("");
+  const [streetNumber, setStreetNumber] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [houseNumberErrorMessage, setHouseNumberErrorMessage] = useState("");
+  const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState("");
+  const [streetNumberErrorMessage, setStreetNumberErrorMessage] = useState("");
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
+  const [cardNumberErrorMessage, setCardNumberErrorMessage] = useState("");
+  const [phoneNumberErrorMessage, setPhoneNumberErrorMessage] = useState("");
+
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -70,10 +71,6 @@ const Register = (props) => {
   const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
   const [signUpSuccess, setSignUpSuccess] = useState(false);
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
 
   const clearErrors = () => {
     setEmailErrorMessage("");
@@ -96,14 +93,34 @@ const Register = (props) => {
       setError: setEmailErrorMessage,
     },
     {
-      name: "Height",
-      value: height,
-      setError: setHeightErrorMessage,
+      name: "Username",
+      value: username,
+      setError: setUsernameErrorMessage,
     },
     {
-      name: "Sex",
-      value: selectedDate,
-      setError: setSexErrorMessage,
+      name: "Phone Number",
+      value: phoneNumber,
+      setError: setPhoneNumberErrorMessage,
+    },
+    {
+      name: "House Number",
+      value: houseNumber,
+      setError: setHouseNumberErrorMessage,
+    },
+    {
+      name: "Postal Code",
+      value: postalCode,
+      setError: setPostalCodeErrorMessage,
+    },
+    {
+      name: "Street Number",
+      value: streetNumber,
+      setError: setStreetNumberErrorMessage,
+    },
+    {
+      name: "Card Number",
+      value: cardNumber,
+      setError: setCardNumberErrorMessage,
     },
   ];
 
@@ -151,91 +168,40 @@ const Register = (props) => {
     });
   };
 
-  const fetchExistingUser = async () => {
-    let doesUserAlreadyExist = null;
-    await API.graphql(
-      graphqlOperation(userByEmail, {
-        email: email,
-      })
-    )
-      .then((response) => {
-        console.log(response);
-        if (response.data.userByEmail.items.length > 0) {
-          doesUserAlreadyExist = true;
-          console.log("Exists", doesUserAlreadyExist);
-        } else {
-          doesUserAlreadyExist = false;
-          console.log("DNE", doesUserAlreadyExist);
-        }
-      })
-      .catch((error) => {
-        console.log(error, " Error occured");
-      });
-
-    return new Promise((resolve, reject) => {
-      if (doesUserAlreadyExist !== null) {
-        resolve(doesUserAlreadyExist);
-      } else {
-        reject("Error");
-      }
-    });
-  };
-
-  const signUpCognito = async (successMessage, errorMessage) => {
-    let response;
-    try {
-      response = await Auth.signUp({
-        username: email,
-        password: newPassword,
-        attributes: {
-          email: email,
-        },
-      });
-      setSignUpSuccess(true);
-    } catch (error) {}
-  };
-
   const signUp = async () => {
     const createUser = {
-      email: email,
+      username: username,
+      password: newPassword,
       first_name: firstName,
       last_name: lastName,
-      DOB: selectedDate.toISOString().slice(0, 10),
-      sex: sex,
-      height: height,
+      email: email,
+      user_role: "customer",
+      phone_num: phoneNumber,
+      house_num: houseNumber,
+      postal_code: postalCode,
+      street_num: streetNumber,
+      card_num: cardNumber,
     };
-    const createdUser = API.graphql({
-      query: mutations.createUser,
-      variables: { input: createUser },
-    })
-      .then((response) => {
-        console.log("Sucess new user created" || createdUser);
-        signUpCognito(
-          "New User: " + firstName + " successfully registered",
-          "Error on signup"
-        );
+
+    axios
+      .post("http://localhost:8000/restapi/auth/", { createUser })
+      .then((res) => {
+        console.log(res);
+        setSignUpSuccess(true);
       })
-      .catch((error) => {
-        console.log("error creating user ", error.errors[0].message);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   const handleSignUpButton = async () => {
-    console.log("================================");
-    console.log("First Name:", firstName);
-    console.log("Email:", email);
-    console.log("Date", selectedDate.toISOString().slice(0, 10));
-    console.log("================================");
     const areFieldsValidated = await validateFields();
     if (areFieldsValidated) {
-      const doesUserAlreadyExist = await fetchExistingUser();
-      if (!doesUserAlreadyExist) {
-        console.log("Are all fields validated?", areFieldsValidated);
-        await signUp();
-        if (signUpSuccess) {
-          console.log("No errors");
-          history.back();
-        }
+      console.log("Are all fields validated?", areFieldsValidated);
+      await signUp();
+      if (signUpSuccess) {
+        console.log("No errors");
+        history.push("/");
       }
     }
   };
@@ -250,7 +216,7 @@ const Register = (props) => {
           <Grid container>
             <Grid item lg={5} md={5} sm={5} xs={12}>
               <div className="p-32 flex flex-center flex-middle h-100">
-                <img src="/assets/images/PulseLogo.png" alt="logo" />
+                <img src="/assets/images/PizzaLogo.png" alt="logo" />
               </div>
             </Grid>
             <Grid item lg={7} md={7} sm={7} xs={12}>
@@ -267,6 +233,22 @@ const Register = (props) => {
                   direction="column"
                   alignItems="stretch"
                 >
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      label="Username"
+                      onChange={(event) => {
+                        setUsername(event.target.value);
+                        setUsernameErrorMessage("");
+                      }}
+                      value={username}
+                      fullWidth
+                      type="text"
+                      name="uName"
+                      error={usernameErrorMessage !== ""}
+                      helperText={usernameErrorMessage}
+                    />
+                  </Grid>
                   <Grid item xs={12}>
                     <TextField
                       variant="outlined"
@@ -302,21 +284,6 @@ const Register = (props) => {
 
                   <Grid item xs={12}>
                     <TextField
-                      label="Height (cm)"
-                      onChange={(event) => {
-                        setHeight(event.target.value);
-                        setHeightErrorMessage("");
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      type="text"
-                      name="height"
-                      value={height}
-                      errorMessage={heightErrorMessage}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
                       variant="outlined"
                       label="Email"
                       onChange={(event) => {
@@ -327,8 +294,73 @@ const Register = (props) => {
                       fullWidth
                       type="text"
                       name="email"
-                      error={lastNameErrorMessage !== ""}
-                      helperText={lastNameErrorMessage}
+                      error={emailErrorMessage !== ""}
+                      helperText={emailErrorMessage}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      label="Phone Number"
+                      onChange={(event) => {
+                        setPhoneNumber(event.target.value);
+                        clearErrors();
+                      }}
+                      value={phoneNumber}
+                      fullWidth
+                      type="text"
+                      name="phoneNumber"
+                      error={phoneNumberErrorMessage !== ""}
+                      helperText={phoneNumberErrorMessage}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      label="House Number"
+                      onChange={(event) => {
+                        setHouseNumber(event.target.value);
+                        setHouseNumberErrorMessage("");
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      name="houseNum"
+                      value={houseNumber}
+                      errorMessage={houseNumberErrorMessage}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Postal Code"
+                      onChange={(event) => {
+                        setPostCode(event.target.value);
+                        setPostalCodeErrorMessage("");
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      name="pCode"
+                      value={postalCode}
+                      errorMessage={postalCodeErrorMessage}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Street Number"
+                      onChange={(event) => {
+                        setStreetNumber(event.target.value);
+                        setStreetNumberErrorMessage("");
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      name="streetNum"
+                      value={streetNumber}
+                      errorMessage={streetNumberErrorMessage}
                     />
                   </Grid>
 
@@ -364,39 +396,21 @@ const Register = (props) => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel id="new-sex-label">Sex</InputLabel>
-                      <Select
-                        labelId="new-sex-label"
-                        id="new-sex-label"
-                        value={sex}
-                        onChange={(event) => {
-                          setSex(event.target.value);
-                        }}
-                      >
-                        <MenuItem value={"MALE"}>Male</MenuItem>
-                        <MenuItem value={"FEMALE"}>Female</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <TextField
+                      label="Card Number"
+                      onChange={(event) => {
+                        setCardNumber(event.target.value);
+                        setCardNumberErrorMessage("");
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      name="cardNum"
+                      value={cardNumber}
+                      errorMessage={cardNumberErrorMessage}
+                    />
                   </Grid>
 
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid item xs={12}>
-                      <KeyboardDatePicker
-                        fullWidth
-                        margin="normal"
-                        id="date-picker-dialog"
-                        label="Date of Birth"
-                        format="MM/dd/yyyy"
-                        maxDate={new Date()}
-                        value={selectedDate}
-                        onChange={handleDateChange}
-                        KeyboardButtonProps={{
-                          "aria-label": "change date",
-                        }}
-                      />
-                    </Grid>
-                  </MuiPickersUtilsProvider>
                   <Grid item xs={12} style={{ display: "flex" }}>
                     <TextButton onClick={history.goBack}>Back</TextButton>
                     <div style={{ flexGrow: 1 }} />

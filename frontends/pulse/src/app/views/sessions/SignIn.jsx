@@ -1,80 +1,101 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Grid, Button } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import { Auth } from "aws-amplify";
 import TextButton from "../shared/TextButton";
 import authRoles from "../../auth/authRoles";
 import TextField from "../shared/TextField";
 import AppContext from "../../appContext";
+import axios from "axios";
 
 const SignIn = (props) => {
   const { history } = props;
 
-  const [email, setEmail] = useState("");
-  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [username, setUserName] = useState("");
+  const [usernameErrorMessage, setUserNameErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [authToken, setAuthToken] = useState("");
 
   const { refreshAuth, setRefreshAuth } = useContext(AppContext);
 
   const clearErrors = () => {
-    setEmailErrorMessage("");
+    setUserNameErrorMessage("");
     setPasswordErrorMessage("");
   };
 
   const redirect = () => {
     const currentUserInfo = JSON.parse(localStorage.getItem("currentUserInfo"));
+    const role = currentUserInfo["user_role"];
     if (localStorage.getItem("lastLocation") != null) {
       const lastLocation = localStorage.getItem("lastLocation");
       localStorage.removeItem("lastLocation");
       history.push(lastLocation);
       return;
     }
-    history.push("/dashboard");
+    console.log(role.toUpperCase());
+    switch (role.toUpperCase()) {
+      case "CUSTOMER":
+        history.push("/dashboard");
+        break;
+      default:
+        history.push("/session/404");
+        break;
+    }
   };
 
   const handleForgotPassword = async () => {
-    history.push("/session/forgot-password", { email });
+    history.push("/session/forgot-password", { username });
   };
 
   const handleRegister = async () => {
     history.push("/session/register");
   };
 
-  const handleSignin = () => {
+  const handleSignin = async () => {
     const validationData = new Map();
-    if (!email) {
-      setEmailErrorMessage("Email is required");
+    if (!username) {
+      setUserNameErrorMessage("Username is required");
     } else if (!password) {
       setPasswordErrorMessage("Password field is required");
     } else {
-      Auth.signIn({ username: email, password }, validationData)
-        .then((resp) => {
-          Auth.currentUserInfo().then((currentUserInfo) => {
-            if (currentUserInfo) {
-              setRefreshAuth(!refreshAuth);
-              localStorage.setItem(
-                "currentUserInfo",
-                JSON.stringify(currentUserInfo)
-              );
-              console.log(currentUserInfo);
-              redirect();
-            } else {
-              console.error("--------> received null user!");
-            }
-          });
-        })
-        .catch((error) => {
-          //console.log("error on login", error);
-          if ((error.code = "UserNotConfirmedException")) {
-            console.log("user not found");
-            history.push("/session/activate", { email });
-          } else {
-            setEmailErrorMessage("Incorrect email or password");
-            setPasswordErrorMessage("Incorrect email or password");
-          }
-        });
+      await getToken();
+      console.log(authToken);
+      await signIn();
     }
+  };
+
+  const signIn = async (token) => {
+    axios
+      .get("http://localhost:8000/restapi/auth/" + username + "/", {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => {
+        if (res) {
+          setRefreshAuth(!refreshAuth);
+          localStorage.setItem("currentUserInfo", JSON.stringify(res.data));
+          localStorage.setItem("authToken", token);
+          redirect();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getToken = async () => {
+    axios
+      .post("http://localhost:8000/api/token/", {
+        username: username,
+        password: password,
+      })
+      .then((res) => {
+        setAuthToken(res.data["access"]);
+        signIn(res.data["access"]);
+      })
+      .catch((err) => {
+        setUserNameErrorMessage("Username is invalid");
+        setPasswordErrorMessage("Password field is invalid");
+      });
   };
 
   useEffect(() => {
@@ -99,7 +120,7 @@ const SignIn = (props) => {
           <Grid container>
             <Grid item lg={5} md={5} sm={5} xs={12}>
               <div className="p-32 flex flex-center flex-middle h-100">
-                <img src="/assets/images/PulseLogo.png" alt="logo" />
+                <img src="/assets/images/PizzaLogo.png" alt="logo" />
               </div>
             </Grid>
             <Grid item lg={7} md={7} sm={7} xs={12}>
@@ -118,15 +139,15 @@ const SignIn = (props) => {
                 >
                   <Grid item xs={12}>
                     <TextField
-                      label="Email"
+                      label="Username"
                       onChange={(event) => {
-                        setEmail(event.target.value);
+                        setUserName(event.target.value);
                         clearErrors();
                       }}
-                      value={email}
+                      value={username}
                       type="email"
                       name="email"
-                      errorMessage={emailErrorMessage}
+                      errorMessage={usernameErrorMessage}
                     />
                   </Grid>
                   <Grid item xs={12}>

@@ -13,16 +13,23 @@ import "antd/dist/antd.css";
 const App = () => {
   const [user, setUser] = useState(null);
   const [refreshAuth, setRefreshAuth] = useState(false);
+  const [authToken, setAuthToken] = useState("");
   return (
     <AppContext.Provider
-      value={{ routes, user, setUser, refreshAuth, setRefreshAuth }}
+      value={{
+        routes,
+        user,
+        setUser,
+        refreshAuth,
+        setRefreshAuth,
+        authToken,
+        setAuthToken,
+      }}
     >
       <Provider store={Store}>
         <MatxTheme>
           <Router history={history}>
-            <AuthGuard>
-              <MatxLayout />
-            </AuthGuard>
+            <MatxLayout />
           </Router>
         </MatxTheme>
       </Provider>
