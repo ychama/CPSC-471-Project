@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Manager, Customer, Admin, FoodItem, Driver, Shift, RestaurantBranch, Order, Manager, Supplier, Ingredient
+from .models import User, Manager, Customer, Admin, FoodItem, FoodUses, Driver, Shift, RestaurantBranch, Order, Manager, Supplier, Ingredient
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,10 +25,32 @@ class BranchSerializer(serializers.ModelSerializer):
         model = RestaurantBranch
         fields = ('branch_id', 'phone_num', 'house_num', 'street_num', 'postal_code')
 
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ('name', 'supplier_id')
+
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ('ingredient_id', 'name', 'quantity', 'supplier')
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['supplier'] = SupplierSerializer(instance.supplier, context=self.context).data
+        return response
+
+class FoodUsesSerializer(serializers.ModelSerializer):
+    ingredient = IngredientSerializer()
+    class Meta:
+        model = FoodUses
+        fields = ('ingredient', 'amount')
+
 class FoodItemSerializer(serializers.ModelSerializer):
+    food_uses = FoodUsesSerializer(many=True)
     class Meta:
         model = FoodItem
-        fields = ('name', 'price', 'restaurant_branches')
+        fields = ('name', 'price', 'restaurant_branches', 'food_uses')
 
 
 class PastOrderSerializer(serializers.ModelSerializer):
@@ -70,19 +92,4 @@ class ManagerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['user'] = UserSerializer(instance.user, context=self.context).data
-        return response
-
-class SupplierSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Supplier
-        fields = ('name', 'supplier_id')
-
-class IngredientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ingredient
-        fields = ('ingredient_id', 'name', 'quantity', 'supplier')
-    
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['supplier'] = SupplierSerializer(instance.supplier, context=self.context).data
         return response

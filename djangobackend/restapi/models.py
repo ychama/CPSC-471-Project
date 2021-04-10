@@ -55,7 +55,7 @@ class FoodItem (models.Model):
 class FoodUses(models.Model):
     amount = models.IntegerField()
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
+    food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE, related_name="food_uses")
 
     class Meta:
         unique_together = ('ingredient', 'food_item')        
