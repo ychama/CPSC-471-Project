@@ -33,12 +33,7 @@ class SupplierSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('ingredient_id', 'name', 'quantity', 'supplier')
-    
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['supplier'] = SupplierSerializer(instance.supplier, context=self.context).data
-        return response
+        fields = ('ingredient_id', 'name', 'quantity')
 
 class FoodUsesSerializer(serializers.ModelSerializer):
     ingredient = IngredientSerializer()
