@@ -9,8 +9,8 @@ from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password
 
-from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer
-from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient
+from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer, FoodItemUpdateSerializer
+from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient, FoodUses
 
 
 def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
@@ -33,44 +33,6 @@ def enforce(create=AllowAny, retrieve=AllowAny, update=AllowAny,
             return func(self) + permission_classes
         return wrapper
     return _enforce
-
-class TokenViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (AllowAny,)
-
-    def list(self, request):
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def destroy(self, request, pk=None):
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def update(self, request, pk=None):
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def retrieve(self, request, pk=None):
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def partial_update(self, request, pk=None):
-        return Response(status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def create(self, request):
-        queryset = User.objects.all()
-        data = request.data
-        user = get_object_or_404(queryset, pk=data['username'])
-        user_serializer = UserSerializer(user)
-
-        if(not check_password(data['password'], user.password)):
-            return Response(status.HTTP_400_BAD_REQUEST)
-
-        refresh = RefreshToken.for_user(user)
-        response = {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                    }
-        return Response(response, status=status.HTTP_200_OK)
-        
-
 
 class AuthUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -210,6 +172,24 @@ class FoodItemViewSet(viewsets.ModelViewSet):
     serializer_class = FoodItemSerializer
     #permission_classes = (IsAuthenticated,)
     
+    def get_serializer_class(self):
+        if self.action == 'update':
+            return FoodItemUpdateSerializer
+        return FoodItemSerializer
+
+    def create(self, request):
+        queryset = FoodItem.objects.all()
+        data = request.data
+        item = FoodItem.objects.create(name=data["food_name"], price=data["price"])
+        item.save()
+
+        for ingredient in data["ingredients"]:
+            ing_instance = Ingredient.objects.get(pk=ingredient["ingredient_id"])
+            uses = FoodUses.objects.create(food_item=item, ingredient=ing_instance, amount=ingredient["amount"])
+            uses.save()
+    
+        return Response(status=status.HTTP_201_CREATED)
+
     def retrieve(self, request, pk=None):
         queryset = FoodItem.objects.all()
         Foods = get_object_or_404(RestaurantBranch.objects.all(), pk=pk)
@@ -233,6 +213,8 @@ class DriverViewSet(viewsets.ModelViewSet):
         if(queryset.filter(user=data['username'])):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
+        branch = RestaurantBranch.objects.all().get(manager=data['manager_user'])
+
         user = User.objects.create(username=data['username'], password=data['password'], email=data['email'], first_name=data['first_name'], last_name=data['last_name'], phone_num=data['phone_num'], house_num=data['house_num'], postal_code=data['postal_code'], street_num=data['street_num'], user_role=data['user_role'])
         user_serializer = UserSerializer(user)
         user.password = user_serializer.validate_password(data['password'])
@@ -261,6 +243,23 @@ class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
     #permission_classes = (IsAuthenticated,)
+
+    def create(self, request):
+        queryset = Manager.objects.all()
+        data = request.data
+        if(queryset.filter(user=data['username'])):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.create(username=data['username'], password=data['password'], email=data['email'], first_name=data['first_name'], last_name=data['last_name'], phone_num=data['phone_num'], house_num=data['house_num'], postal_code=data['postal_code'], street_num=data['street_num'], user_role=data['user_role'])
+        user_serializer = UserSerializer(user)
+        user.password = user_serializer.validate_password(data['password'])
+        user.save()
+
+        manager = Manager.objects.create(user=user, salary=data['salary'], branch=None)
+        manager.save()
+
+        serializer = ManagerSerializer(manager)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()

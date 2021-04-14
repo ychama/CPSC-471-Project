@@ -46,12 +46,16 @@ class FoodUsesSerializer(serializers.ModelSerializer):
         model = FoodUses
         fields = ('ingredient', 'amount')
 
+class FoodItemUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodItem
+        fields = ('name', 'price', 'restaurant_branches')
+
 class FoodItemSerializer(serializers.ModelSerializer):
     food_uses = FoodUsesSerializer(many=True)
     class Meta:
         model = FoodItem
         fields = ('name', 'price', 'restaurant_branches', 'food_uses')
-
 
 class PastOrderSerializer(serializers.ModelSerializer):
     food_items = FoodItemSerializer(many = True, read_only = True)
