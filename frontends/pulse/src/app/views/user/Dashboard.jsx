@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 import PizzaLogo from "../../MatxLayout/SharedCompoents/PizzaMainLogo";
 import classnames from "classnames";
 import AppContext from "../../appContext";
-import { makeStyles, Grid, Container } from "@material-ui/core";
+import { makeStyles, Grid, Container, CardHeader } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Paper from "@material-ui/core/Paper";
@@ -10,6 +10,12 @@ import Popper from "@material-ui/core/Popper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Button from "@material-ui/core/Button";
 import Grow from "@material-ui/core/Grow";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "100%",
   },
   gridContainer: {
-    height: "100%",
+    height: "25%",
     maxHeight: "100%",
   },
   gridCell: {
@@ -54,22 +60,75 @@ const useStylesButton = makeStyles((theme) => ({
   },
 }));
 
+const useStylesCard = makeStyles({
+  root: {
+    maxWidth: 1000,
+  },
+  media: {
+    height: 140,
+  },
+});
+
 const Dashboard = () => {
   const { user, authToken } = useContext(AppContext);
   const [branchList, setBranchList] = useState([]);
   const [foodItems, setFoodItems] = useState([]);
   const [open, setOpen] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [branchSelection, setBranchSelection] = useState(-1);
   const anchorRef = useRef(null);
   const classButton = useStylesButton();
+  const classCard = useStylesCard();
+  const classes = useStyles();
+  const addToCart = (foodName) => {
+    const tempCart = [...cart];
+    tempCart.push(foodName);
+    console.log(tempCart);
+    setCart(tempCart);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("cartSelection", cart);
+    console.log(localStorage.getItem("cartSelection"));
+  }, [cart]);
+
+  const elementExists = (foodName) => {
+    let temp = cart.indexOf(foodName);
+
+    if (temp < 0) return false;
+    else return true;
+  };
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = (event, branchId) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
+  const getBranchAddress = (branchID) => {
+    let branchAddress = "";
+    console.log(branchID);
+
+    for (let i = 0; i < branchList.length; i++) {
+      if (branchList[i]["branch_id"] === branchID) {
+        branchAddress +=
+          branchList[i]["house_num"] +
+          " " +
+          branchList[i]["street_num"] +
+          ", " +
+          branchList[i]["postal_code"];
+        return branchAddress;
+      }
     }
+    return "N/A";
+  };
+
+  const handleClose = (branchId) => {
+    if (branchId != branchSelection) setCart([]);
+    setBranchSelection(branchId);
+    localStorage.setItem("branchSelection", branchId);
+    console.log(localStorage.getItem("branchSelection"));
+    // if (anchorRef.current && anchorRef.current.contains(event.target)) {
+    //   return;
+    // }
 
     axios
       .get("http://localhost:8000/restapi/foods/" + branchId + "/", {
@@ -77,6 +136,7 @@ const Dashboard = () => {
       })
       .then((res) => {
         console.log(res);
+        setFoodItems(res.data);
       });
 
     setOpen(false);
@@ -106,7 +166,7 @@ const Dashboard = () => {
       //get branches
       getBranches();
     }
-  }, []);
+  }, [user]);
 
   const getBranches = async () => {
     axios
@@ -115,11 +175,12 @@ const Dashboard = () => {
       })
       .then((res) => {
         console.log(res.data);
+        setBranchSelection(res.data[0].branch_id);
         setBranchList(res.data);
+        handleClose(res.data[0].branch_id);
       });
   };
 
-  const classes = useStyles();
   return (
     <div className={classes.root}>
       <Container maxWidth="lg" className={classes.rootContainer}>
@@ -143,7 +204,8 @@ const Dashboard = () => {
               aria-controls={open ? "menu-list-grow" : undefined}
               aria-haspopup="true"
               onClick={handleToggle}
-              style={{ color: "blue" }}
+              variant="contained"
+              color="primary"
             >
               Branch List Selection
             </Button>
@@ -172,11 +234,11 @@ const Dashboard = () => {
                         {branchList.map((branch, key) => {
                           return (
                             <MenuItem
-                              onClick={(event) => {
-                                handleClose(event, branch.branch_id);
+                              onClick={() => {
+                                handleClose(branch.branch_id);
                               }}
                             >
-                              {branch.branch_id}
+                              {getBranchAddress(branch.branch_id)}
                             </MenuItem>
                           );
                         })}
@@ -188,6 +250,44 @@ const Dashboard = () => {
             </Popper>
           </Grid>
         </Grid>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+          justify="center"
+          alignItems="flex-start"
+          xs={12}
+          className={classes.gridRowTwo}
+        >
+          {foodItems.map((element) => (
+            <Grid item xs={6} key={foodItems.indexOf(element)}>
+              <Card className={classCard.root}>
+                <CardHeader title={element["name"]} />
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Price : ${element["price"]} <br></br> Ingredients:
+                    {element["food_uses"].map((foodUses, key) => {
+                      return foodUses["ingredient"]["name"] + ", ";
+                    })}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    disabled={elementExists(element["name"])}
+                    onClick={() => {
+                      addToCart(element["name"]);
+                    }}
+                    size="small"
+                    color="primary"
+                  >
+                    Add to Cart
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        <h3> Selected Branch: {getBranchAddress(branchSelection)}</h3>
       </Container>
     </div>
   );

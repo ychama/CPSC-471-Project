@@ -12,6 +12,7 @@ import history from "history.js";
 import "antd/dist/antd.css";
 const App = () => {
   const [user, setUser] = useState(null);
+  const [cart, setCart] = useState([]);
   const [refreshAuth, setRefreshAuth] = useState(false);
   const [authToken, setAuthToken] = useState("");
   return (
@@ -24,6 +25,8 @@ const App = () => {
         setRefreshAuth,
         authToken,
         setAuthToken,
+        cart,
+        setCart,
       }}
     >
       <Provider store={Store}>

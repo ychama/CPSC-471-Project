@@ -1,20 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
+import PizzaLogo from "../../MatxLayout/SharedCompoents/PizzaMainLogo";
+import classnames from "classnames";
+import AppContext from "../../appContext";
+import { makeStyles, Container, CardHeader } from "@material-ui/core";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+
+import Grow from "@material-ui/core/Grow";
+
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Typography from "@material-ui/core/Typography";
+import axios from "axios";
+import TextButton from "../shared/TextButton";
 import {
   Card,
   Grid,
   Button,
-  makeStyles,
   TextField,
   InputLabel,
   FormControl,
   Select,
-  MenuItem,
 } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
-import TextButton from "../shared/TextButton";
-import axios from "axios";
 
-//axios.defaults.headers.common["Access-Control-Allow-Origin"] = "true";
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     position: "relative",
@@ -38,13 +51,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Register = (props) => {
-  const classes = useStyles();
+const Profile = (props) => {
+  const { user, setUser, authToken } = useContext(AppContext);
   const { history } = props;
-
-  let inputEmail = "";
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState(inputEmail);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
@@ -52,29 +61,37 @@ const Register = (props) => {
   const [streetNumber, setStreetNumber] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
 
   const [houseNumberErrorMessage, setHouseNumberErrorMessage] = useState("");
   const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState("");
   const [streetNumberErrorMessage, setStreetNumberErrorMessage] = useState("");
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [cardNumberErrorMessage, setCardNumberErrorMessage] = useState("");
   const [phoneNumberErrorMessage, setPhoneNumberErrorMessage] = useState("");
-
-  const [newPassword, setNewPassword] = useState("");
-  const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [
-    confirmPasswordErrorMessage,
-    setConfirmPasswordErrorMessage,
-  ] = useState("");
-  const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
-  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const classes = useStyles();
 
   const clearErrors = () => {
     setEmailErrorMessage("");
   };
+
+  useEffect(() => {
+    if (user) {
+      console.log(user);
+      getCardNumber();
+      setFirstName(user.first_name);
+      setLastName(user.last_name);
+      setHouseNumber(user.house_num);
+      setPostCode(user.postal_code);
+      setStreetNumber(user.street_num);
+      setPhoneNumber(user.phone_num);
+      setEmail(user.email);
+    }
+  }, [user]);
 
   const formFields = [
     {
@@ -86,16 +103,6 @@ const Register = (props) => {
       name: "Last_Name",
       value: lastName,
       setError: setLastNameErrorMessage,
-    },
-    {
-      name: "Email",
-      value: email,
-      setError: setEmailErrorMessage,
-    },
-    {
-      name: "Username",
-      value: username,
-      setError: setUsernameErrorMessage,
     },
     {
       name: "Phone Number",
@@ -127,7 +134,6 @@ const Register = (props) => {
   const validateEmail = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
-
   const validateFields = () => {
     let areAllFieldsValid = true;
     formFields.forEach((field) => {
@@ -139,25 +145,13 @@ const Register = (props) => {
         }
       } else {
         if (field.value === "") {
+          console.log("error");
           console.log("Found error field", field.name, field.value);
           field.setError(field.name + "is required");
           areAllFieldsValid = false;
         }
       }
     });
-
-    if (newPassword !== "" && confirmPassword !== "") {
-      if (newPassword !== confirmPassword) {
-        areAllFieldsValid = false;
-        setNewPasswordErrorMessage("Password's do not match");
-        setConfirmPassword("Password's do not match");
-      }
-    } else {
-      areAllFieldsValid = false;
-      setNewPasswordErrorMessage("This is required");
-      setConfirmPassword("This is required");
-    }
-
     console.log("Finished validateFields", areAllFieldsValid);
     return new Promise((resolve, reject) => {
       if (areAllFieldsValid) {
@@ -168,10 +162,10 @@ const Register = (props) => {
     });
   };
 
-  const signUp = async () => {
-    const createUser = {
-      username: username,
-      password: newPassword,
+  const updateCredentials = async () => {
+    const userInfo = {
+      username: user.username,
+      password: user.password,
       first_name: firstName,
       last_name: lastName,
       email: email,
@@ -180,31 +174,45 @@ const Register = (props) => {
       house_num: houseNumber,
       postal_code: postalCode,
       street_num: streetNumber,
-      card_num: cardNumber,
     };
-
     axios
-      .post("http://localhost:8000/restapi/auth/", { createUser })
+      .put("http://localhost:8000/restapi/customer/" + user.username + "/", {
+        user: userInfo,
+        card_num: cardNumber,
+      })
       .then((res) => {
         console.log(res);
-        setSignUpSuccess(true);
+        setUpdateSuccess(true);
+        alert("User Updated Successfully");
+        setUser({ ...res.data["user"] });
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const handleSignUpButton = async () => {
+  const handleSaveButton = async () => {
     const areFieldsValidated = await validateFields();
+
     if (areFieldsValidated) {
       console.log("Are all fields validated?", areFieldsValidated);
-      await signUp();
-      if (signUpSuccess) {
+      await updateCredentials();
+      if (updateSuccess) {
         console.log("No errors");
-        history.push("/");
       }
     }
   };
+
+  const getCardNumber = () => {
+    axios
+      .get("http://localhost:8000/restapi/customer/" + user.username + "/", {
+        headers: { Authorization: "Bearer " + authToken },
+      })
+      .then((res) => {
+        setCardNumber(res.data["card_num"]);
+      });
+  };
+  //readonly="readonly"
 
   return (
     <div
@@ -237,16 +245,11 @@ const Register = (props) => {
                     <TextField
                       variant="outlined"
                       label="Username"
-                      onChange={(event) => {
-                        setUsername(event.target.value);
-                        setUsernameErrorMessage("");
-                      }}
-                      value={username}
+                      value={user.username}
+                      disabled="disabled"
                       fullWidth
                       type="text"
                       name="uName"
-                      error={usernameErrorMessage !== ""}
-                      helperText={usernameErrorMessage}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -369,39 +372,6 @@ const Register = (props) => {
 
                   <Grid item xs={12}>
                     <TextField
-                      label="Password"
-                      variant="outlined"
-                      onChange={(event) => {
-                        setNewPassword(event.target.value);
-                        setNewPasswordErrorMessage("");
-                      }}
-                      fullWidth
-                      value={newPassword}
-                      type="password"
-                      name="new-password"
-                      error={newPasswordErrorMessage !== ""}
-                      helperText={newPasswordErrorMessage}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Confirm Password"
-                      onChange={(event) => {
-                        setConfirmPassword(event.target.value);
-                        setConfirmPasswordErrorMessage("");
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      type="password"
-                      name="confirm-password"
-                      value={confirmPassword}
-                      error={confirmPasswordErrorMessage !== ""}
-                      helperText={confirmPasswordErrorMessage}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
                       label="Card Number"
                       onChange={(event) => {
                         setCardNumber(event.target.value);
@@ -418,14 +388,13 @@ const Register = (props) => {
                   </Grid>
 
                   <Grid item xs={12} style={{ display: "flex" }}>
-                    <TextButton onClick={history.goBack}>Back</TextButton>
                     <div style={{ flexGrow: 1 }} />
                     <Button
-                      onClick={handleSignUpButton}
+                      onClick={handleSaveButton}
                       variant="contained"
                       color="primary"
                     >
-                      Sign Up
+                      Save
                     </Button>
                   </Grid>
                 </Grid>
@@ -438,4 +407,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default Profile;
