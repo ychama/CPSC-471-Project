@@ -77,11 +77,11 @@ class Vehicle(models.Model):
         unique_together = ('vin', 'branch')
 
 class Shift(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     start_time = models.DateTimeField()
     duration = models.IntegerField()
     manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, null=True)
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="shifts")
 
     class Meta:
         unique_together = ('start_time', 'driver')

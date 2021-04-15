@@ -6,7 +6,6 @@ import userRoutes from "../../views/user/UserRoutes";
 import driverRoutes from "../../views/driver/DriverRoutes";
 import managerRoutes from "../../views/manager/ManagerRoutes";
 import AppContext from "../../appContext";
-import authRoles, { getUserRole } from "../../auth/authRoles";
 
 export const drawerWidth = "86px";
 
@@ -38,7 +37,7 @@ const Drawer = () => {
 
   useEffect(() => {
     if (user) {
-      switch (user["user_role"].toUpperCase()){
+      switch (user["user_role"].toUpperCase()) {
         case "CUSTOMER":
           setRoleRoutes(userRoutes);
           break;

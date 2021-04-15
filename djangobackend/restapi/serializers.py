@@ -69,20 +69,22 @@ class CustomerSerializer(serializers.ModelSerializer):
         response['user'] = UserSerializer(instance.user, context=self.context).data
         return response
 
+class ShiftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shift
+        fields = ('id','start_time', 'duration', 'manager', 'driver',)
+
 class DriverSerializer(serializers.ModelSerializer):
+    shifts = ShiftSerializer(many=True, read_only=True)
     class Meta:
         model = Driver
-        fields = ('user', 'branch', 'salary')
+        fields = ('user', 'branch', 'salary', 'shifts')
     
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['user'] = UserSerializer(instance.user, context=self.context).data
         return response
 
-class ShiftSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shift
-        fields = ('id','start_time', 'duration', 'manager', 'driver',)
   
 class ManagerSerializer(serializers.ModelSerializer):
     class Meta:

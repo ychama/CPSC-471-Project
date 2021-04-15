@@ -6,9 +6,11 @@ import {
 } from "@material-ui/icons";
 import ManagerDashboard from "./ManagerDashboard";
 import ManagerProfile from "./ManagerProfile";
+import HireDriver from "./HireDriver";
 import BranchInfo from "../shared/BranchInfo"
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import InfoIcon from '@material-ui/icons/Info';
+import AddIcon from '@material-ui/icons/Add';
 
 
 const managerRoutes = [
@@ -24,6 +26,12 @@ const managerRoutes = [
     name: "Profile",
     component: ManagerProfile,
     sidebarIcon: <AccountCircle fontSize="large" />,
+  },
+  {
+    path: "/hiredriver",
+    name: "Hire Driver",
+    component: HireDriver,
+    sidebarIcon: <AddIcon fontSize="large" />,
   },
   {
     path: "/branchinfo",

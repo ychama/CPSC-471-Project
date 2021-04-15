@@ -8,7 +8,7 @@ import datetime, random
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password
-
+import timestring
 from .serializers import UserSerializer, CustomerSerializer, FoodItemSerializer, DriverSerializer, ShiftSerializer, BranchSerializer, PastOrderSerializer, ManagerSerializer, IngredientSerializer, FoodItemUpdateSerializer
 from .models import User, Customer, FoodItem, RestaurantBranch, Driver, Shift, Order, Manager, Ingredient, FoodUses
 
@@ -200,6 +200,20 @@ class DriverViewSet(viewsets.ModelViewSet):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
     #permission_classes = (IsAuthenticated,)
+
+    def list(self, retrieve):
+        queryset = Driver.objects.all()
+        serializer = DriverSerializer(queryset, many=True)
+        current_time = datetime.datetime.now()
+        
+        for driver in serializer.data:
+            for shift in driver["shifts"]:
+                work_duration = datetime.timedelta(hours=shift["duration"])
+                end_time = datetime.datetime.strptime(shift["start_time"],"%Y-%m-%dT%H:%M:%SZ") + work_duration
+                if end_time < current_time:
+                    driver["shifts"].remove(shift)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         queryset = Driver.objects.all()

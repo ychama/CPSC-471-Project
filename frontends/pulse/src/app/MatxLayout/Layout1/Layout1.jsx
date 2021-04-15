@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     flex: `0 0 ${drawerWidth}`,
   },
   mainContent: {
+    overflowY: "auto",
     flex: "1",
     height: `calc(100vh - ${headerHeight})`,
     maxHeight: `calc(100vh - ${headerHeight})`,

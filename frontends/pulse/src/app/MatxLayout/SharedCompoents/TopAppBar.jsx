@@ -18,7 +18,6 @@ import AppContext from "../../appContext";
 import AvatarClickable from "./AvatarClickable";
 import defaultImage from "./image/default.png";
 import "./style.css";
-import authRoles, { getUserRole } from "../../auth/authRoles";
 import userRoutes from "../../views/user/UserRoutes";
 import driverRoutes from "../../views/driver/DriverRoutes";
 import managerRoutes from "../../views/manager/ManagerRoutes";
@@ -72,7 +71,7 @@ const TopAppBar = (props) => {
   useEffect(() => {
     if (user) {
       let roleRoutes = [];
-      switch (user["user_role"].toUpperCase()){
+      switch (user["user_role"].toUpperCase()) {
         case "CUSTOMER":
           roleRoutes = userRoutes;
           break;
