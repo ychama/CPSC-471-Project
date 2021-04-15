@@ -7,8 +7,10 @@ import {
 import DriverDashboard from "./DriverDashboard";
 import DriverSchedule from "./DriverSchedule";
 import DriverProfile from "./DriverProfile";
+import BranchInfo from "../shared/BranchInfo"
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ScheduleIcon from '@material-ui/icons/Schedule';
+import InfoIcon from '@material-ui/icons/Info';
 
 
 const driverRoutes = [
@@ -30,6 +32,12 @@ const driverRoutes = [
     name: "Schedule",
     component: DriverSchedule,
     sidebarIcon: <ScheduleIcon fontSize="large" />,
+  },
+  {
+    path: "/branchinfo",
+    name: "Branch Info",
+    component: BranchInfo,
+    sidebarIcon: <InfoIcon fontSize="large" />,
   }
 ];
 

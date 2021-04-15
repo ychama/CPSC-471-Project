@@ -205,7 +205,7 @@ const DriverProfile = () => {
 
                   <Grid item xs={12}>
                     <TextField
-                      label="Salary"
+                      label="Salary ($/hr)"
                       fullWidth
                       variant="outlined"
                       type="text"
@@ -217,7 +217,7 @@ const DriverProfile = () => {
 
                   <Grid item xs={12}>
                     <TextField
-                      label="Branch Info"
+                      label="Branch Address"
                       fullWidth
                       variant="outlined"
                       type="text"

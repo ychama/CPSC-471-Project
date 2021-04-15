@@ -5,7 +5,6 @@ import axios from "axios";
 import {
   Card,
   Grid,
-  Button,
   TextField,
 } from "@material-ui/core";
 
@@ -32,38 +31,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Profile = (props) => {
-  const { user, setUser, authToken } = useContext(AppContext);
-  const { history } = props;
+const ManagerProfile = () => {
+  const { user, authToken } = useContext(AppContext);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [postalCode, setPostCode] = useState("");
   const [streetNumber, setStreetNumber] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
+  const [salary, setSalary] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-
-  const [houseNumberErrorMessage, setHouseNumberErrorMessage] = useState("");
-  const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState("");
-  const [streetNumberErrorMessage, setStreetNumberErrorMessage] = useState("");
-  const [cardNumberErrorMessage, setCardNumberErrorMessage] = useState("");
-  const [phoneNumberErrorMessage, setPhoneNumberErrorMessage] = useState("");
-  const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
-  const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
-  const [emailErrorMessage, setEmailErrorMessage] = useState("");
-  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [branchInfo, setBranchInfo] = useState("");
 
   const classes = useStyles();
-
-  const clearErrors = () => {
-    setEmailErrorMessage("");
-  };
 
   useEffect(() => {
     if (user) {
       console.log(user);
-      getCardNumber();
+      getDriverInfo();
       setFirstName(user.first_name);
       setLastName(user.last_name);
       setHouseNumber(user.house_num);
@@ -74,126 +59,28 @@ const Profile = (props) => {
     }
   }, [user]);
 
-  const formFields = [
-    {
-      name: "First_Name",
-      value: firstName,
-      setError: setFirstNameErrorMessage,
-    },
-    {
-      name: "Last_Name",
-      value: lastName,
-      setError: setLastNameErrorMessage,
-    },
-    {
-      name: "Phone Number",
-      value: phoneNumber,
-      setError: setPhoneNumberErrorMessage,
-    },
-    {
-      name: "House Number",
-      value: houseNumber,
-      setError: setHouseNumberErrorMessage,
-    },
-    {
-      name: "Postal Code",
-      value: postalCode,
-      setError: setPostalCodeErrorMessage,
-    },
-    {
-      name: "Street Number",
-      value: streetNumber,
-      setError: setStreetNumberErrorMessage,
-    },
-    {
-      name: "Card Number",
-      value: cardNumber,
-      setError: setCardNumberErrorMessage,
-    },
-  ];
-
-  const validateEmail = () => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-  const validateFields = () => {
-    let areAllFieldsValid = true;
-    formFields.forEach((field) => {
-      if (field.name == "Email") {
-        if (!validateEmail()) {
-          console.log("Invalid email");
-          field.setError(field.name + "Invalid email");
-          areAllFieldsValid = false;
-        }
-      } else {
-        if (field.value === "") {
-          console.log("error");
-          console.log("Found error field", field.name, field.value);
-          field.setError(field.name + "is required");
-          areAllFieldsValid = false;
-        }
-      }
-    });
-    console.log("Finished validateFields", areAllFieldsValid);
-    return new Promise((resolve, reject) => {
-      if (areAllFieldsValid) {
-        resolve(true);
-      } else {
-        reject(false);
-      }
-    });
-  };
-
-  const updateCredentials = async () => {
-    const userInfo = {
-      username: user.username,
-      password: user.password,
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      user_role: "customer",
-      phone_num: phoneNumber,
-      house_num: houseNumber,
-      postal_code: postalCode,
-      street_num: streetNumber,
-    };
+  const getDriverInfo = () => {
     axios
-      .put("http://localhost:8000/restapi/customer/" + user.username + "/", {
-        user: userInfo,
-        card_num: cardNumber,
-      })
-      .then((res) => {
-        console.log(res);
-        setUpdateSuccess(true);
-        alert("User Updated Successfully");
-        setUser({ ...res.data["user"] });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const handleSaveButton = async () => {
-    const areFieldsValidated = await validateFields();
-
-    if (areFieldsValidated) {
-      console.log("Are all fields validated?", areFieldsValidated);
-      await updateCredentials();
-      if (updateSuccess) {
-        console.log("No errors");
-      }
-    }
-  };
-
-  const getCardNumber = () => {
-    axios
-      .get("http://localhost:8000/restapi/customer/" + user.username + "/", {
+      .get("http://localhost:8000/restapi/manager/" + user.username + "/", {
         headers: { Authorization: "Bearer " + authToken },
       })
       .then((res) => {
-        setCardNumber(res.data["card_num"]);
+        setSalary(res.data["salary"]);
+
+        axios.get("http://localhost:8000/restapi/branch/" + res.data["branch"] + "/", {
+          headers: { Authorization: "Bearer " + authToken },
+        })
+        .then((res) => {
+          let b_info = ""
+          b_info += res.data["house_num"] 
+                + " " 
+                + res.data["street_num"] 
+                + ", " 
+                + res.data["postal_code"];
+          setBranchInfo(b_info);
+        })
       });
   };
-  //readonly="readonly"
 
   return (
     <div
@@ -237,32 +124,22 @@ const Profile = (props) => {
                     <TextField
                       variant="outlined"
                       label="First Name"
-                      onChange={(event) => {
-                        setFirstName(event.target.value);
-                        setFirstNameErrorMessage("");
-                      }}
                       value={firstName}
                       fullWidth
                       type="text"
                       name="fName"
-                      error={firstNameErrorMessage !== ""}
-                      helperText={firstNameErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
                       variant="outlined"
                       label="Last Name"
-                      onChange={(event) => {
-                        setLastName(event.target.value);
-                        setLastNameErrorMessage("");
-                      }}
                       value={lastName}
                       fullWidth
                       type="text"
                       name="lName"
-                      error={emailErrorMessage !== ""}
-                      helperText={emailErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
@@ -270,16 +147,11 @@ const Profile = (props) => {
                     <TextField
                       variant="outlined"
                       label="Email"
-                      onChange={(event) => {
-                        setEmail(event.target.value);
-                        clearErrors();
-                      }}
                       value={email}
                       fullWidth
                       type="text"
                       name="email"
-                      error={emailErrorMessage !== ""}
-                      helperText={emailErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
@@ -287,96 +159,72 @@ const Profile = (props) => {
                     <TextField
                       variant="outlined"
                       label="Phone Number"
-                      onChange={(event) => {
-                        setPhoneNumber(event.target.value);
-                        clearErrors();
-                      }}
                       value={phoneNumber}
                       fullWidth
                       type="text"
                       name="phoneNumber"
-                      error={phoneNumberErrorMessage !== ""}
-                      helperText={phoneNumberErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
                   <Grid item xs={12}>
                     <TextField
                       label="House Number"
-                      onChange={(event) => {
-                        setHouseNumber(event.target.value);
-                        setHouseNumberErrorMessage("");
-                      }}
                       fullWidth
                       variant="outlined"
                       type="text"
                       name="houseNum"
                       value={houseNumber}
-                      error={houseNumberErrorMessage !== ""}
-                      helperText={houseNumberErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
                   <Grid item xs={12}>
                     <TextField
                       label="Postal Code"
-                      onChange={(event) => {
-                        setPostCode(event.target.value);
-                        setPostalCodeErrorMessage("");
-                      }}
                       fullWidth
                       variant="outlined"
                       type="text"
                       name="pCode"
                       value={postalCode}
-                      error={postalCodeErrorMessage !== ""}
-                      helperText={postalCodeErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
                   <Grid item xs={12}>
                     <TextField
                       label="Street Number"
-                      onChange={(event) => {
-                        setStreetNumber(event.target.value);
-                        setStreetNumberErrorMessage("");
-                      }}
                       fullWidth
                       variant="outlined"
                       type="text"
                       name="streetNum"
                       value={streetNumber}
-                      error={streetNumberErrorMessage !== ""}
-                      helperText={streetNumberErrorMessage}
+                      disabled="disabled"
                     />
                   </Grid>
 
                   <Grid item xs={12}>
                     <TextField
-                      label="Card Number"
-                      onChange={(event) => {
-                        setCardNumber(event.target.value);
-                        setCardNumberErrorMessage("");
-                      }}
+                      label="Salary ($/hr)"
                       fullWidth
                       variant="outlined"
                       type="text"
-                      name="cardNum"
-                      value={cardNumber}
-                      error={cardNumberErrorMessage !== ""}
-                      helperText={cardNumberErrorMessage}
+                      name="salary"
+                      value={salary}
+                      disabled="disabled"
                     />
                   </Grid>
 
-                  <Grid item xs={12} style={{ display: "flex" }}>
-                    <div style={{ flexGrow: 1 }} />
-                    <Button
-                      onClick={handleSaveButton}
-                      variant="contained"
-                      color="primary"
-                    >
-                      Save
-                    </Button>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Branch Address"
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      name="branchInfo"
+                      value={branchInfo}
+                      disabled="disabled"
+                    />
                   </Grid>
                 </Grid>
               </div>

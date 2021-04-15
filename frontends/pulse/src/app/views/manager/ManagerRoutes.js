@@ -4,25 +4,32 @@ import {
   AccountCircle,
   ChildFriendly,
 } from "@material-ui/icons";
-import Dashboard from "../user/Dashboard";
-
-import Profile from "../user/Profile";
+import ManagerDashboard from "./ManagerDashboard";
+import ManagerProfile from "./ManagerProfile";
+import BranchInfo from "../shared/BranchInfo"
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import InfoIcon from '@material-ui/icons/Info';
 
 
 const managerRoutes = [
   {
-    path: "/dashboard",
-    component: Dashboard,
+    path: "/managerdashboard",
+    component: ManagerDashboard,
     name: "Dashboard",
     home: true,
     sidebarIcon: <AssessmentIcon fontSize="large" />,
   },
   {
-    path: "/profile",
+    path: "/managerprofile",
     name: "Profile",
-    component: Profile,
+    component: ManagerProfile,
     sidebarIcon: <AccountCircle fontSize="large" />,
+  },
+  {
+    path: "/branchinfo",
+    name: "Branch Info",
+    component: BranchInfo,
+    sidebarIcon: <InfoIcon fontSize="large" />,
   }
 ];
 
