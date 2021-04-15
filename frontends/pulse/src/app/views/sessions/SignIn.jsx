@@ -37,6 +37,12 @@ const SignIn = (props) => {
       case "CUSTOMER":
         history.push("/dashboard", { authToken });
         break;
+      case "DRIVER":
+        history.push("/driverdashboard", { authToken });
+        break;
+      case "MANAGER":
+        history.push("/managerdashboard", { authToken });
+        break;
       default:
         history.push("/session/404");
         break;

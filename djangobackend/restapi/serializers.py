@@ -54,6 +54,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
 
 class PastOrderSerializer(serializers.ModelSerializer):
     food_items = FoodItemSerializer(many = True, read_only = True)
+    customer = CustomerSerializer(read_only=True)
     class Meta:
         model = Order
         fields = ('order_date','food_items', 'order_delivered', 'customer')

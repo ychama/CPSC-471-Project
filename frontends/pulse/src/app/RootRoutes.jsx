@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import sessionRoutes from "./views/sessions/SessionRoutes";
 import userRoutes from "./views/user/UserRoutes";
+import driverRoutes from "./views/driver/DriverRoutes";
+import managerRoutes from "./views/manager/ManagerRoutes";
 
 function RedirectComponent() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -29,6 +31,8 @@ const errorRoute = [
 
 const routes = [
   ...sessionRoutes,
+  ...driverRoutes,
+  ...managerRoutes,
   ...userRoutes,
   ...redirectRoute,
   ...errorRoute,

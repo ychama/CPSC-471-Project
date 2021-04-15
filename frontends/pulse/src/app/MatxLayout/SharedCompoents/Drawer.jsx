@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { makeStyles, Paper } from "@material-ui/core";
 import DrawerButton from "./DrawerButton";
 import userRoutes from "../../views/user/UserRoutes";
+import driverRoutes from "../../views/driver/DriverRoutes";
+import managerRoutes from "../../views/manager/ManagerRoutes";
 import AppContext from "../../appContext";
 import authRoles, { getUserRole } from "../../auth/authRoles";
 
@@ -36,7 +38,17 @@ const Drawer = () => {
 
   useEffect(() => {
     if (user) {
-      setRoleRoutes(userRoutes);
+      switch (user["user_role"].toUpperCase()){
+        case "CUSTOMER":
+          setRoleRoutes(userRoutes);
+          break;
+        case "DRIVER":
+          setRoleRoutes(driverRoutes);
+          break;
+        case "MANAGER":
+          setRoleRoutes(managerRoutes);
+          break;
+      }
     }
   }, [user]);
 

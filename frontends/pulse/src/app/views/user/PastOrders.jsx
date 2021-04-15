@@ -3,18 +3,8 @@ import PizzaLogo from "../../MatxLayout/SharedCompoents/PizzaMainLogo";
 import classnames from "classnames";
 import AppContext from "../../appContext";
 import { makeStyles, Grid, Container, CardHeader } from "@material-ui/core";
-import MenuItem from "@material-ui/core/MenuItem";
-import MenuList from "@material-ui/core/MenuList";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Button from "@material-ui/core/Button";
-import Grow from "@material-ui/core/Grow";
 import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 

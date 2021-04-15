@@ -20,6 +20,8 @@ import defaultImage from "./image/default.png";
 import "./style.css";
 import authRoles, { getUserRole } from "../../auth/authRoles";
 import userRoutes from "../../views/user/UserRoutes";
+import driverRoutes from "../../views/driver/DriverRoutes";
+import managerRoutes from "../../views/manager/ManagerRoutes";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -55,7 +57,6 @@ const TopAppBar = (props) => {
 
   const getUrlPathName = () => new URL(document.location.href).pathname;
   const { user, setUser, refreshAuth, setRefreshAuth } = useContext(AppContext);
-  console.log("App context", AppContext);
 
   const getPageTitle = (routes) => {
     try {
@@ -71,7 +72,17 @@ const TopAppBar = (props) => {
   useEffect(() => {
     if (user) {
       let roleRoutes = [];
-      roleRoutes = userRoutes;
+      switch (user["user_role"].toUpperCase()){
+        case "CUSTOMER":
+          roleRoutes = userRoutes;
+          break;
+        case "DRIVER":
+          roleRoutes = driverRoutes;
+          break;
+        case "MANAGER":
+          roleRoutes = managerRoutes;
+          break;
+      }
       setHomeRoute(
         roleRoutes.filter((item) => item.hasOwnProperty("home"))[0].path
       );
