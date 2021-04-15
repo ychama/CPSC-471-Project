@@ -87,7 +87,7 @@ const DriverSchedule = () => {
         let rows = [];
         for(let i = 0; i < shifts.length; i++){
             let date = new Date(shifts[i]["start_time"]);
-            let onlyDate = moment(date).format("DD-mm-YYYY");
+            let onlyDate = moment(date).format("DD-MM-YYYY");
             let onlyTime = moment(date).format("HH:mm");
             let data = createData(onlyDate, onlyTime, shifts[i]["duration"], shifts[i]["manager"])
             rows.push(data);

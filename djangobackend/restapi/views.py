@@ -236,8 +236,18 @@ class ShiftViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         queryset = Shift.objects.all()
         sh = Shift.objects.all().filter(driver=pk)
-        shift = ShiftSerializer(sh, many=True)
-        return Response(shift.data, status.HTTP_200_OK)
+        upcomingShifts = []
+        current_time = timezone.now()
+
+        for shift in sh:
+            work_duration = datetime.timedelta(hours=shift.duration)
+            end_time = shift.start_time + work_duration
+
+            if end_time > current_time:
+                upcomingShifts.append(shift)
+
+        shifts = ShiftSerializer(upcomingShifts, many=True)
+        return Response(shifts.data, status.HTTP_200_OK)
 
 class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manager.objects.all()
