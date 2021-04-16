@@ -188,6 +188,7 @@ const Register = (props) => {
       .then((res) => {
         console.log(res);
         setSignUpSuccess(true);
+        history.push("/session/signin");
       })
       .catch((err) => {
         console.log(err);
@@ -201,7 +202,6 @@ const Register = (props) => {
       await signUp();
       if (signUpSuccess) {
         console.log("No errors");
-        history.push("/");
       }
     }
   };
