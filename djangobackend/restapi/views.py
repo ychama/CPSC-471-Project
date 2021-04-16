@@ -136,7 +136,7 @@ class CustomerOrderViewSet(viewsets.ModelViewSet):
         available_drivers = []
 
         for shift in Shift.objects.all():
-            if(shift.driver.branch.branch_id is not request.data['branch']):
+            if(shift.driver.branch.branch_id is not int(request.data['branch'])):
                 continue
 
             work_duration = datetime.timedelta(hours=shift.duration)
