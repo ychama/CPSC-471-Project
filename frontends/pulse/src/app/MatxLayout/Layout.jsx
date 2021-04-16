@@ -17,8 +17,6 @@ class Layout extends Component {
     super(props);
     this.appContext = context;
     this.updateSettingsFromRouter();
-
-    // Set settings from query (Only for demo purpose)
     this.setLayoutFromQuery();
   }
 
@@ -30,7 +28,6 @@ class Layout extends Component {
 
   componentDidMount() {
     if (window) {
-      // LISTEN WINDOW RESIZE
       window.addEventListener("resize", this.listenWindowResize);
     }
   }
@@ -52,9 +49,7 @@ class Layout extends Component {
 
       setLayoutSettings(updatedSettings);
       setDefaultSettings(updatedSettings);
-    } catch (e) {
-      // console.log("Error! Set settings from query param", e);
-    }
+    } catch (e) {}
   };
 
   listenWindowResize = () => {
@@ -74,15 +69,12 @@ class Layout extends Component {
     let { defaultSettings, settings, setLayoutSettings } = this.props;
 
     if (matched && matched.route.settings) {
-      // ROUTE HAS SETTINGS
       const updatedSettings = merge({}, settings, matched.route.settings);
       if (!isEqual(settings, updatedSettings)) {
         setLayoutSettings(updatedSettings);
-        // console.log('Route has settings');
       }
     } else if (!isEqual(settings, defaultSettings)) {
       setLayoutSettings(defaultSettings);
-      // console.log('reset settings', defaultSettings);
     }
   }
 

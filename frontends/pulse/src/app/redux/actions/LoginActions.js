@@ -1,7 +1,3 @@
-import history from "history.js";
-import jwtAuthService from "../../services/jwtAuthService";
-import { setUserData } from "./UserActions";
-
 export const LOGIN_ERROR = "LOGIN_ERROR";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_LOADING = "LOGIN_LOADING";
@@ -12,26 +8,6 @@ export function loginWithEmailAndPassword({ email, password }) {
     dispatch({
       type: LOGIN_LOADING,
     });
-
-    jwtAuthService
-      .loginWithEmailAndPassword(email, password)
-      .then((user) => {
-        dispatch(setUserData(user));
-
-        history.push({
-          pathname: "/",
-        });
-
-        return dispatch({
-          type: LOGIN_SUCCESS,
-        });
-      })
-      .catch((error) =>
-        dispatch({
-          type: LOGIN_ERROR,
-          payload: error,
-        })
-      );
   };
 }
 

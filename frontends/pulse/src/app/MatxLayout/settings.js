@@ -15,23 +15,21 @@ function createMatxThemes() {
 const themes = createMatxThemes();
 
 const MatxLayoutSettings = {
-  activeLayout: "layout1", // Check out Matx pro for more options
-  activeTheme: "pulse", // View all valid theme colors inside MatxTheme/themeColors.js
+  activeLayout: "layout1",
+  activeTheme: "pulse",
   perfectScrollbar: true,
 
   themes,
-  layout1Settings, // open Layout1/Layout1Settings.js
+  layout1Settings,
 
   secondarySidebar: {
-    // Check out Matx pro for secondary sidebar
     show: true,
-    theme: "pulse", // View all valid theme colors inside MatxTheme/themeColors.js
+    theme: "pulse",
   },
-  // Footer options
   footer: {
     show: true,
     fixed: false,
-    theme: "pulse", // View all valid theme colors inside MatxTheme/themeColors.js
+    theme: "pulse",
   },
 };
 

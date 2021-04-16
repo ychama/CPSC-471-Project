@@ -12,11 +12,9 @@ import { connect } from "react-redux";
 import { setLayoutSettings } from "app/redux/actions/LayoutActions";
 import { logoutUser } from "app/redux/actions/UserActions";
 import { PropTypes } from "prop-types";
-import { MatxMenu, MatxSearchBox } from "matx";
+import { MatxMenu } from "matx";
 import { isMdScreen } from "utils";
-import NotificationBar from "../SharedCompoents/NotificationBar";
 import { Link } from "react-router-dom";
-import ShoppingCart from "../SharedCompoents/ShoppingCart";
 import { Auth } from "aws-amplify";
 
 const styles = (theme) => ({
@@ -86,36 +84,13 @@ class Layout1Topbar extends Component {
                   <Icon>menu</Icon>
                 </IconButton>
 
-                <div className="hide-on-mobile">
-                  {/*//todo: add top bar icon */}
-                  {/*<IconButton>*/}
-                  {/*  <Icon>mail_outline</Icon>*/}
-                  {/*</IconButton>*/}
-
-                  {/*<IconButton>*/}
-                  {/*  <Icon>web_asset</Icon>*/}
-                  {/*</IconButton>*/}
-
-                  {/*<IconButton>*/}
-                  {/*  <Icon>star_outline</Icon>*/}
-                  {/*</IconButton>*/}
-                </div>
+                <div className="hide-on-mobile"></div>
               </div>
               <div className="flex flex-middle">
-                {/*  <MatxSearchBox />*/}
-
-                {/*<NotificationBar />*/}
-
-                {/* <ShoppingCart></ShoppingCart>*/}
-
                 <MatxMenu
                   menuButton={
                     <img
                       className="mx-8 text-middle circular-image-small cursor-pointer"
-                      /*                      src={role === "ADMIN" ?  "/assets/images/admin.jpg" : role === "NURSE"  ?
-                          "/assets/images/nurse1.jpg" : "/assets/images/mother.png"}
-                      alt="user"*/
-
                       src={"/assets/images/admin.jpg"}
                       alt="user"
                     />
