@@ -82,7 +82,6 @@ const DriverDashboard = () => {
         }
       )
       .then((res) => {
-        console.log(res.data);
         setOrders(res.data);
       });
   };

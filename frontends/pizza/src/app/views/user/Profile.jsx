@@ -57,7 +57,6 @@ const Profile = (props) => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       getCardNumber();
       setFirstName(user.first_name);
       setLastName(user.last_name);
@@ -115,20 +114,17 @@ const Profile = (props) => {
     formFields.forEach((field) => {
       if (field.name == "Email") {
         if (!validateEmail()) {
-          console.log("Invalid email");
           field.setError(field.name + "Invalid email");
           areAllFieldsValid = false;
         }
       } else {
         if (field.value === "") {
-          console.log("error");
-          console.log("Found error field", field.name, field.value);
           field.setError(field.name + "is required");
           areAllFieldsValid = false;
         }
       }
     });
-    console.log("Finished validateFields", areAllFieldsValid);
+
     return new Promise((resolve, reject) => {
       if (areAllFieldsValid) {
         resolve(true);
@@ -163,7 +159,6 @@ const Profile = (props) => {
         }
       )
       .then((res) => {
-        console.log(res);
         setUpdateSuccess(true);
         alert("User Updated Successfully");
         setUser({ ...res.data["user"] });
@@ -177,7 +172,6 @@ const Profile = (props) => {
     const areFieldsValidated = await validateFields();
 
     if (areFieldsValidated) {
-      console.log("Are all fields validated?", areFieldsValidated);
       await updateCredentials();
       if (updateSuccess) {
         console.log("No errors");

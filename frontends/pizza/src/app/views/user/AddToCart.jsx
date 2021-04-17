@@ -87,7 +87,7 @@ const AddToCart = () => {
     if (index > -1) {
       tempCartList.splice(index, 1);
     }
-    console.log(tempCartList);
+
     localStorage.setItem("cartSelection", tempCartList);
     setCartList(tempCartList);
   };
@@ -109,7 +109,6 @@ const AddToCart = () => {
         { headers: { Authorization: "Bearer " + authToken } }
       )
       .then((res) => {
-        console.log(res);
         setCartList([]);
         localStorage.setItem("cartSelection", []);
       })
@@ -140,10 +139,9 @@ const AddToCart = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       let tempCartList = localStorage.getItem("cartSelection");
       setCartList(tempCartList.split(","));
-      console.log(cartList.length);
+
       setBranchID(localStorage.getItem("branchSelection"));
     }
   }, [user]);
@@ -212,11 +210,15 @@ const AddToCart = () => {
             if (index === -1) return;
             let foodInfo = foodList[index];
             total += foodInfo["price"];
-            console.log(total);
 
             return (
               <Grid item xs={6} key={cartList.indexOf(element)}>
                 <Card className={classCard.root}>
+                  <CardMedia
+                    className={classCard.media}
+                    image="/assets/images/Pizza.jpg"
+                    title="Pizza logo"
+                  />
                   <CardHeader title={element} />
                   <CardContent>
                     <Typography variant="h6" gutterBottom>

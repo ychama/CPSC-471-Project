@@ -115,14 +115,11 @@ const HireDriver = (props) => {
     formFields.forEach((field) => {
       if (field.name == "Email") {
         if (!validateEmail()) {
-          console.log("Invalid email");
           field.setError(field.name + "Invalid email");
           areAllFieldsValid = false;
         }
       } else {
         if (field.value === "") {
-          console.log("error");
-          console.log("Found error field", field.name, field.value);
           field.setError(field.name + "is required");
           areAllFieldsValid = false;
         }
@@ -141,7 +138,6 @@ const HireDriver = (props) => {
       setConfirmPassword("This is required");
     }
 
-    console.log("Finished validateFields", areAllFieldsValid);
     return new Promise((resolve, reject) => {
       if (areAllFieldsValid) {
         resolve(true);
@@ -186,7 +182,6 @@ const HireDriver = (props) => {
     const areFieldsValidated = await validateFields();
 
     if (areFieldsValidated) {
-      console.log("Are all fields validated?", areFieldsValidated);
       await postDriver();
     }
   };

@@ -187,7 +187,6 @@ const Row = (props) => {
               value={selectedDate}
               onChange={(event) => {
                 setSelectedDate(event.target.value);
-                console.log(event.target.value);
               }}
               minDate={new Date()}
               className={classes.textField}
@@ -286,7 +285,7 @@ const DriverSchedule = () => {
             managedDrivers.push(res.data[i]);
           }
         }
-        console.log(managedDrivers);
+
         setDrivers(managedDrivers);
       });
   };

@@ -133,13 +133,11 @@ const Register = (props) => {
     formFields.forEach((field) => {
       if (field.name == "Email") {
         if (!validateEmail()) {
-          console.log("Invalid email");
           field.setError(field.name + "Invalid email");
           areAllFieldsValid = false;
         }
       } else {
         if (field.value === "") {
-          console.log("Found error field", field.name, field.value);
           field.setError(field.name + "is required");
           areAllFieldsValid = false;
         }
@@ -158,7 +156,6 @@ const Register = (props) => {
       setConfirmPassword("This is required");
     }
 
-    console.log("Finished validateFields", areAllFieldsValid);
     return new Promise((resolve, reject) => {
       if (areAllFieldsValid) {
         resolve(true);
@@ -186,7 +183,6 @@ const Register = (props) => {
     axios
       .post("http://localhost:8000/restapi/auth/", { createUser })
       .then((res) => {
-        console.log(res);
         setSignUpSuccess(true);
         history.push("/session/signin");
       })

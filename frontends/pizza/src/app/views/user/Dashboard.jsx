@@ -83,13 +83,12 @@ const Dashboard = () => {
   const addToCart = (foodName) => {
     const tempCart = [...cart];
     tempCart.push(foodName);
-    console.log(tempCart);
+
     setCart(tempCart);
   };
 
   useEffect(() => {
     localStorage.setItem("cartSelection", cart);
-    console.log(localStorage.getItem("cartSelection"));
   }, [cart]);
 
   const elementExists = (foodName) => {
@@ -105,7 +104,6 @@ const Dashboard = () => {
 
   const getBranchAddress = (branchID) => {
     let branchAddress = "";
-    console.log(branchID);
 
     for (let i = 0; i < branchList.length; i++) {
       if (branchList[i]["branch_id"] === branchID) {
@@ -125,17 +123,12 @@ const Dashboard = () => {
     if (branchId != branchSelection) setCart([]);
     setBranchSelection(branchId);
     localStorage.setItem("branchSelection", branchId);
-    console.log(localStorage.getItem("branchSelection"));
-    // if (anchorRef.current && anchorRef.current.contains(event.target)) {
-    //   return;
-    // }
 
     axios
       .get("http://localhost:8000/restapi/foods/" + branchId + "/", {
         headers: { Authorization: "Bearer " + authToken },
       })
       .then((res) => {
-        console.log(res);
         setFoodItems(res.data);
       });
 
@@ -161,8 +154,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
-      console.log(authToken);
       //get branches
       getBranches();
     }
@@ -174,7 +165,6 @@ const Dashboard = () => {
         headers: { Authorization: "Bearer " + authToken },
       })
       .then((res) => {
-        console.log(res.data);
         setBranchSelection(res.data[0].branch_id);
         setBranchList(res.data);
         handleClose(res.data[0].branch_id);

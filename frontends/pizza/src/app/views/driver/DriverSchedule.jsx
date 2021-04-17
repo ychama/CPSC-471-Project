@@ -3,14 +3,14 @@ import PizzaLogo from "../../MatxLayout/SharedCompoents/PizzaMainLogo";
 import classnames from "classnames";
 import AppContext from "../../appContext";
 import { makeStyles, Grid, Container } from "@material-ui/core";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import moment from 'moment';
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import moment from "moment";
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +68,6 @@ const DriverSchedule = () => {
         headers: { Authorization: "Bearer " + authToken },
       })
       .then((res) => {
-        console.log(res.data);
         setShifts(res.data);
       });
   };
@@ -79,84 +78,89 @@ const DriverSchedule = () => {
     }
   }, [user]);
 
-  const createData =(start_date, start_time, duration, manager) => {
+  const createData = (start_date, start_time, duration, manager) => {
     return { start_date, start_time, duration, manager };
+  };
+
+  const updateRows = () => {
+    let rows = [];
+    for (let i = 0; i < shifts.length; i++) {
+      let date = new Date(shifts[i]["start_time"]);
+      let onlyDate = moment(date).format("DD-MM-YYYY");
+      let onlyTime = moment(date).format("HH:mm");
+      let data = createData(
+        onlyDate,
+        onlyTime,
+        shifts[i]["duration"],
+        shifts[i]["manager"]
+      );
+      rows.push(data);
     }
+    setTableRows(rows);
+  };
 
-    const updateRows = () => {
-        let rows = [];
-        for(let i = 0; i < shifts.length; i++){
-            let date = new Date(shifts[i]["start_time"]);
-            let onlyDate = moment(date).format("DD-MM-YYYY");
-            let onlyTime = moment(date).format("HH:mm");
-            let data = createData(onlyDate, onlyTime, shifts[i]["duration"], shifts[i]["manager"])
-            rows.push(data);
-        }
-        setTableRows(rows);
+  useEffect(() => {
+    if (shifts) {
+      updateRows();
     }
+  }, [shifts]);
 
-    useEffect(() => {
-        if (shifts) {
-          updateRows();
-        }
-      }, [shifts]);
-
-  
-  return (<div className={classes.root}>
-    <Container maxWidth="lg" className={classes.rootContainer}>
-      <Grid
-        item
-        container
-        direction="column"
-        className={classes.gridContainer}
-      >
+  return (
+    <div className={classes.root}>
+      <Container maxWidth="lg" className={classes.rootContainer}>
         <Grid
           item
           container
-          justify="center"
-          alignItems="center"
-          xs={12}
-          className={classnames(classes.gridCell, classes.gridRowOne)}
+          direction="column"
+          className={classes.gridContainer}
         >
-          <PizzaLogo width={200} />
+          <Grid
+            item
+            container
+            justify="center"
+            alignItems="center"
+            xs={12}
+            className={classnames(classes.gridCell, classes.gridRowOne)}
+          >
+            <PizzaLogo width={200} />
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid
-        container
-        direction="row"
-        spacing={2}
-        justify="center"
-        alignItems="flex-start"
-        xs={12}
-        className={classes.gridRowTwo}
-      >
-       <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-            <TableRow>
-                <TableCell>Start Date</TableCell>
-                <TableCell align="right">Start Time</TableCell>
-                <TableCell align="right">Duration&nbsp;(hrs)</TableCell>
-                <TableCell align="right">Manager</TableCell>
-            </TableRow>
-        </TableHead>
-        <TableBody>
-            {tableRows.map((row) => (
-            <TableRow key={tableRows.indexOf(row)}>
-                <TableCell component="th" scope="row">
-                {row.start_date}
-                </TableCell>
-                <TableCell align="center">{row.start_time}</TableCell>
-                <TableCell align="center">{row.duration}</TableCell>
-                <TableCell align="center">{row.manager}</TableCell>
-            </TableRow>
-            ))}
-        </TableBody>
-        </Table>
-    </TableContainer> 
-      </Grid>
-    </Container>
-  </div>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+          justify="center"
+          alignItems="flex-start"
+          xs={12}
+          className={classes.gridRowTwo}
+        >
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Start Date</TableCell>
+                  <TableCell align="right">Start Time</TableCell>
+                  <TableCell align="right">Duration&nbsp;(hrs)</TableCell>
+                  <TableCell align="right">Manager</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tableRows.map((row) => (
+                  <TableRow key={tableRows.indexOf(row)}>
+                    <TableCell component="th" scope="row">
+                      {row.start_date}
+                    </TableCell>
+                    <TableCell align="center">{row.start_time}</TableCell>
+                    <TableCell align="center">{row.duration}</TableCell>
+                    <TableCell align="center">{row.manager}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Container>
+    </div>
   );
 };
 

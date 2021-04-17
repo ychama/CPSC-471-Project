@@ -2,11 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import AppContext from "../../appContext";
 import { makeStyles } from "@material-ui/core";
 import axios from "axios";
-import {
-  Card,
-  Grid,
-  TextField,
-} from "@material-ui/core";
+import { Card, Grid, TextField } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -47,7 +43,6 @@ const ManagerProfile = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       getDriverInfo();
       setFirstName(user.first_name);
       setLastName(user.last_name);
@@ -67,18 +62,23 @@ const ManagerProfile = () => {
       .then((res) => {
         setSalary(res.data["salary"]);
 
-        axios.get("http://localhost:8000/restapi/branch/" + res.data["branch"] + "/", {
-          headers: { Authorization: "Bearer " + authToken },
-        })
-        .then((res) => {
-          let b_info = ""
-          b_info += res.data["house_num"] 
-                + " " 
-                + res.data["street_num"] 
-                + ", " 
-                + res.data["postal_code"];
-          setBranchInfo(b_info);
-        })
+        axios
+          .get(
+            "http://localhost:8000/restapi/branch/" + res.data["branch"] + "/",
+            {
+              headers: { Authorization: "Bearer " + authToken },
+            }
+          )
+          .then((res) => {
+            let b_info = "";
+            b_info +=
+              res.data["house_num"] +
+              " " +
+              res.data["street_num"] +
+              ", " +
+              res.data["postal_code"];
+            setBranchInfo(b_info);
+          });
       });
   };
 

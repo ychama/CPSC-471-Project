@@ -31,7 +31,7 @@ const SignIn = (props) => {
       history.push(lastLocation);
       return;
     }
-    console.log(role.toUpperCase());
+
     switch (role.toUpperCase()) {
       case "CUSTOMER":
         history.push("/dashboard", { authToken });

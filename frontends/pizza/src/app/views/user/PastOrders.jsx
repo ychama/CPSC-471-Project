@@ -77,7 +77,6 @@ const PastOrders = () => {
         headers: { Authorization: "Bearer " + authToken },
       })
       .then((res) => {
-        console.log(res.data);
         setPrevOrder(res.data);
       })
       .catch((err) => {
@@ -113,7 +112,6 @@ const PastOrders = () => {
             className={classes.gridRowTwo}
           >
             {prevOrder.map((element) => {
-              console.log(element);
               let orderDate = new Date(element["order_date"]);
               let foodItems = "";
               let totalPrice = 0.0;
