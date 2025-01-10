@@ -22,13 +22,12 @@ Our application provides restaurants with a platform to manage their orders and 
 
 ### Frontend
 - **Language/Framework:** JavaScript, React
-- **Purpose:** Provides an intuitive and responsive user interface for restaurant managers and drivers.
-- **Repository:** [Frontend Repository](./frontends/) 
-
+- **Purpose:** Provides an intuitive and responsive user interface for restaurant managers and customers.
+- **Repository:** [Frontend Repository](./frontends/)
 ### Backend
 - **Language/Framework:** Python, Django
 - **Purpose:** Handles server-side operations, including order management, user authentication, and database interactions.
-- **Repository:** [Backend Repository](/djangobackend/) 
+- **Repository:** [Backend Repository](./djangobackend/) 
 
 ---
 
