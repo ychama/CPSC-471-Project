@@ -1,70 +1,135 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Frontend - CPSC-471-Project
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+The frontend of the **CPSC-471 Project** is built using **React** and **JavaScript** to provide an intuitive and user-friendly interface for Managers, Drivers, and Customers. It integrates seamlessly with the backend APIs to enable efficient management of orders, shifts, and customer interactions.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Prerequisites
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Before running the frontend, ensure the following tools are installed on your system:
 
-### `npm test`
+1. **Node.js** (Version 14 or greater recommended)  
+   [Download Node.js](https://nodejs.org/en/download/)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Setup Instructions
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Navigate to the Frontend Directory**  
+   Use the terminal to navigate to the frontend folder of the project.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Install Node Modules**  
+   Run the following command in the terminal to install the required modules:
+   ```bash
+   npm install
+   ```
+   This will create a `node_modules` folder and populate it with all the dependencies listed in the `package.json` file.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Start the Frontend**  
+   Launch the frontend development server with:
+   ```bash
+   npm start
+   ```
+   The application will be available at [http://localhost:3000](http://localhost:3000).
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Frontend Navigation
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Login Page
+![Login Page](media/login_page.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Navigate to [http://localhost:3000](http://localhost:3000) to access the login page.
+- Enter credentials to log in as either a **Manager**, **Driver**, or **Customer**.
+- Alternatively, register as a customer by clicking the **Register** button and providing the necessary information.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+---
 
-## Learn More
+### Manager Dashboard
+![Manager Dashboard](media/manager_dashboard.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **View Drivers**: Displays a list of drivers associated with the branch.
+- **Manage Shifts**:
+  - Add shifts for drivers using the dropdown.
+  - Remove shifts as needed.
+- **Hire Drivers**:
+![Hire Driver](media/hire_driver.png)
+  - Click the **plus button** (Hire Driver) on the sidebar to navigate to the hiring page.
+  - Enter driver details to hire a new driver.
+  - After hiring, you will be redirected back to the dashboard.
+- **Profile and Branch Information**:
+![Branch Info i)](media/branch_info1.png)
+![Branch info ii)](media/branch_info2.png)
+  - Access the manager’s profile and branch details via the sidebar buttons.
+- **Logout**: Click the avatar icon in the top-right corner to log out.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+### Customer Dashboard
+![Customer Registration](media/customer_signup.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **View Food Items**:
+![View Food Items](media/view_menu_items.png)
 
-### Analyzing the Bundle Size
+  - Select a branch from the dropdown to display its menu.
+  - Add food items to your cart (Note: Changing branches clears your cart).
+- **Cart**:
+![View Cart](media/cart_view.png)
+  - Access the cart via the **Cart Icon** in the sidebar.
+  - View, modify, or remove items from the cart.
+  - **Checkout**:
+    - If drivers are available, your order will be processed and the cart cleared.
+    - If no drivers are available, you will be notified, and the cart remains unchanged.
+- **Past Orders**:
+![View Past Order](media/past_orders.png)
+  - View the status of previous orders via the **Past Orders** button on the sidebar.
+- **Profile**:
+  - Update personal information through the profile page.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+### Driver Dashboard
+![Driver Dashboard](media/driver_schedule.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **Schedule**:
+  - View upcoming shifts by clicking the **Schedule** button in the sidebar.
+- **Orders**:
+![Driver Dashboard](media/driver_orders.png)
+  - Access a list of orders assigned to the driver.
+  - Mark orders as delivered using the **Deliver** button.
+- **Profile and Branch Information**:
+  - View the driver’s profile and branch details via the sidebar buttons.
+- **Logout**:
+  - Log out by clicking the avatar icon in the top-right corner.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Features by User Role
 
-### Deployment
+### Manager
+- Manage drivers and shifts.
+- View profile and branch information.
+- Hire new drivers.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Customer
+- Explore food items by branch.
+- Add items to the cart and place orders.
+- View past orders and update profile details.
 
-### `npm run build` fails to minify
+### Driver
+- View assigned shifts and orders.
+- Mark orders as delivered.
+- Access profile and branch details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## Development Tools and Frameworks Used
+- **React**: For building the user interface.
+- **JavaScript**: For client-side functionality and logic.
+- **HTML/CSS**: For styling and layout.
+- **Node Modules**: Installed via `npm install` to manage project dependencies.
+
+---
