@@ -1,37 +1,20 @@
 
-# CPSC-471-Project
+# Food Delivery Managment System
 
 ## Overview
 
-The **CPSC-471 Project** is a software application designed to help local restaurants overcome the financial challenges posed by third-party food delivery services. By offering a platform that allows restaurants to manage their orders and deliveries directly, this system eliminates the high commission fees associated with external platforms like DoorDash and UberEats. The result is a sustainable and cost-effective solution that empowers local businesses to remain competitive and thrive in the digital age.
+The **Food Delivery Managment System** is a software application designed to empower local restaurants by addressing the financial challenges associated with third-party food delivery services. Popular services such as DoorDash and UberEats charge high commission fees, often up to 30% per order, significantly reducing profit margins for restaurants. This problem has been exacerbated by the increasing shift toward online ordering and restricted indoor dining options.
+
+Our application provides restaurants with a platform to manage their orders and deliveries directly, bypassing third-party services. By giving restaurants full control over their delivery operations, this system helps increase revenue, maintain competitiveness, and provide a more sustainable alternative for small businesses.
 
 ---
 
-## Features and Capabilities
+## Features
 
-This application supports three user roles—**Managers**, **Drivers**, and **Customers**—and provides a comprehensive suite of tools tailored to the needs of each.
-
-### Manager Capabilities
-- **Driver Management:** Managers can view, hire, and assign shifts to delivery drivers. They have full control over creating, updating, and deleting shift schedules to streamline operations.
-- **Order Management:** Managers can oversee food orders, ensuring a smooth workflow from preparation to delivery.
-- **Inventory Control:** Managers can track ingredient availability, manage food items on the menu, and update branch-specific offerings.
-- **Branch Insights:** Detailed branch statistics allow managers to make data-driven decisions, improving overall performance and efficiency.
-- **Profile and Account Management:** Managers can view and update their profiles to keep branch and personal information up to date.
-
-### Driver Capabilities
-- **Shift Tracking:** Drivers can view their assigned shifts and stay updated on their schedules.
-- **Order Fulfillment:** Drivers are provided with a list of orders to deliver and can mark orders as delivered once completed.
-- **Profile Management:** Drivers can view and update their profiles, ensuring their contact and work information is accurate.
-
-### Customer Capabilities
-- **Branch Discovery:** Customers can explore different restaurant branches and their offerings.
-- **Menu Browsing:** Customers can view available food items tailored to each branch.
-- **Order Placement:** Customers can place orders directly, specifying items, payment details, and delivery preferences.
-- **Order History:** Past orders are stored for customer reference, providing a seamless experience for repeat purchases.
-- **Profile Management:** Customers can manage their personal information, payment methods, and account settings.
-
-### Universal Capabilities
-- **Authentication and Security:** All users—whether Managers, Drivers, or Customers—can securely log in and register accounts through the system.
+- **Order Management:** Enables restaurants to process and manage customer orders efficiently.
+- **Delivery Coordination:** Allows restaurant managers to assign deliveries to in-house staff, eliminating reliance on third-party delivery services.
+- **Cost Savings:** Eliminates the commission fees associated with external platforms, improving profit margins.
+- **Customizability:** Tailored specifically to meet the needs of individual restaurants.
 
 ---
 
@@ -39,22 +22,28 @@ This application supports three user roles—**Managers**, **Drivers**, and **Cu
 
 ### Frontend
 - **Language/Framework:** JavaScript, React
-- **Purpose:** Provides an intuitive and responsive user interface for all user roles, enhancing the overall user experience.
+- **Purpose:** Provides an intuitive and responsive user interface for restaurant managers and drivers.
+- **Repository:** [Frontend Repository](./frontends/) 
 
 ### Backend
-- **Language/Framework:** Python, Django, and Django Rest Framework (DRF)
-- **Purpose:** Handles server-side operations, including user authentication, order processing, and database management.
-- **Django Rest Framework (DRF):** Facilitates the creation of robust and flexible RESTful APIs, ensuring seamless interaction between the frontend and backend components.
+- **Language/Framework:** Python, Django
+- **Purpose:** Handles server-side operations, including order management, user authentication, and database interactions.
+- **Repository:** [Backend Repository](/djangobackend/) 
 
 ---
 
 ## Importance
 
-This project directly addresses the financial strain faced by local restaurants in the age of digital food delivery. By offering a direct-to-consumer ordering and delivery platform, it:
-- Eliminates reliance on costly third-party delivery services.
-- Empowers restaurants to retain control over their operations.
-- Enhances customer relationships through streamlined and personalized service.
+In an increasingly competitive and technology-driven market, local restaurants often struggle to sustain themselves while using costly third-party services. Our application provides a direct-to-consumer solution that preserves profits and supports the long-term viability of small businesses. By using this platform, restaurants can:
 
-The **CPSC-471 Project** provides a modern, scalable, and impactful solution for restaurants aiming to thrive in an increasingly competitive industry.
+- Retain control over their customer relationships.
+- Save on commission fees.
+- Stay competitive with a modern, efficient order management system.
+
+---
+
+## Abstract
+
+Our project addresses the challenges faced by local restaurants in the era of online food ordering. The reliance on third-party delivery services diminishes profits due to steep fees, which can be detrimental to smaller establishments. By creating a direct ordering and delivery management platform, we aim to support local businesses and contribute to a more equitable and sustainable food service industry.
 
 ---

@@ -1,9 +1,9 @@
 
-# Frontend - CPSC-471-Project
+# Frontend - Food Delivery Managment System
 
 ## Overview
 
-The frontend of the **CPSC-471 Project** is built using **React** and **JavaScript** to provide an intuitive and user-friendly interface for Managers, Drivers, and Customers. It integrates seamlessly with the backend APIs to enable efficient management of orders, shifts, and customer interactions.
+The frontend of the **Food Delivery Managment System** is built using **React** and **JavaScript** to provide an intuitive and user-friendly interface for Managers, Drivers, and Customers. It integrates seamlessly with the backend APIs to enable efficient management of orders, shifts, and customer interactions.
 
 ---
 
