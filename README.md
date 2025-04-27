@@ -35,7 +35,7 @@ Our application provides restaurants with a platform to manage their orders and 
 
 In an increasingly competitive and technology-driven market, local restaurants often struggle to sustain themselves while using costly third-party services. Our application provides a direct-to-consumer solution that preserves profits and supports the long-term viability of small businesses. By using this platform, restaurants can:
 
-- Retain control over their customer relationships.
+- Removes the need for third-party services, allowing businesses to retain control over their customer relationships.
 - Save on commission fees.
 - Stay competitive with a modern, efficient order management system.
 
